@@ -1,0 +1,248 @@
+/* ====== Premium Design System — Commercial Grade ====== */
+#ccsim-sdk-root {
+  /* Brand — deep blue, bold & visible */
+  --cl-primary: #1565c0;
+  --cl-primary-hover: #0d47a1;
+  --cl-primary-active: #0a2f6c;
+  --cl-primary-light: #e3f2fd;
+  --cl-primary-subtle: rgba(21, 101, 192, 0.08);
+  --cl-primary-glow: rgba(21, 101, 192, 0.4);
+
+  /* Secondary / accent — deeper blue for variety */
+  --cl-accent: #1565c0;
+  --cl-accent-light: #e3f2fd;
+
+  /* Semantic */
+  --cl-success: #10b981;
+  --cl-success-bg: #ecfdf5;
+  --cl-warning: #f59e0b;
+  --cl-warning-bg: #fffbeb;
+  --cl-danger: #ef4444;
+  --cl-danger-bg: #fef2f2;
+  --cl-info: #6b7280;
+  --cl-info-bg: #f3f4f6;
+
+  /* Neutral scale — warm gray for softer, more premium feel */
+  --cl-white: #ffffff;
+  --cl-gray-50: #fafafa;
+  --cl-gray-100: #f5f5f5;
+  --cl-gray-200: #e5e5e5;
+  --cl-gray-300: #d4d4d4;
+  --cl-gray-400: #a3a3a3;
+  --cl-gray-500: #737373;
+  --cl-gray-600: #525252;
+  --cl-gray-700: #404040;
+  --cl-gray-800: #262626;
+  --cl-gray-900: #171717;
+
+  /* Text */
+  --cl-text-primary: var(--cl-gray-900);
+  --cl-text-secondary: var(--cl-gray-600);
+  --cl-text-tertiary: var(--cl-gray-400);
+  --cl-text-disabled: var(--cl-gray-300);
+  --cl-text-placeholder: var(--cl-gray-400);
+  --cl-text-inverse: var(--cl-white);
+
+  /* Backgrounds */
+  --cl-bg-page: var(--cl-gray-50);
+  --cl-bg-container: var(--cl-white);
+  --cl-bg-elevated: var(--cl-white);
+  --cl-bg-hover: var(--cl-gray-100);
+  --cl-bg-active: var(--cl-gray-200);
+  --cl-bg-overlay: rgba(0, 0, 0, 0.4);
+  --cl-bg-tooltip: var(--cl-gray-800);
+
+  /* Borders */
+  --cl-border: var(--cl-gray-200);
+  --cl-border-light: var(--cl-gray-100);
+  --cl-border-heavy: var(--cl-gray-300);
+
+  /* Message bubbles */
+  --cl-bubble-self-bg: var(--cl-primary);
+  --cl-bubble-self-text: var(--cl-text-inverse);
+  --cl-bubble-other-bg: var(--cl-white);
+  --cl-bubble-other-text: var(--cl-text-primary);
+
+  /* Shadows — layered, realistic depth */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+
+  /* Component-specific shadows */
+  --shadow-panel: 0 0 0 1px rgb(0 0 0 / 0.04), 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-widget: 0 8px 28px -4px rgb(21 101 192 / 0.5);
+  --shadow-widget-hover: 0 12px 40px -4px rgb(21 101 192 / 0.65);
+  --shadow-bubble-self: 0 2px 8px -2px rgb(21 101 192 / 0.35);
+  --shadow-dropdown: 0 4px 16px -4px rgb(0 0 0 / 0.12);
+  --shadow-toast: 0 8px 24px -4px rgb(0 0 0 / 0.15);
+  --shadow-btn: 0 2px 8px -2px rgb(21 101 192 / 0.4);
+  --shadow-btn-hover: 0 4px 14px -2px rgb(21 101 192 / 0.5);
+
+  /* Border Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-full: 50%;
+  --radius-round: 999px;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+
+  /* Spacing (4px base) */
+  --sp-0: 0px;
+  --sp-0_5: 2px;
+  --sp-1: 4px;
+  --sp-1_5: 6px;
+  --sp-2: 8px;
+  --sp-2_5: 10px;
+  --sp-3: 12px;
+  --sp-3_5: 14px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* Transitions */
+  --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Sizes */
+  --avatar-xs: 24px;
+  --avatar-sm: 28px;
+  --avatar-md: 36px;
+  --avatar-lg: 44px;
+  --avatar-xl: 56px;
+  --panel-header-height: 54px;
+  --widget-size: 56px;
+  --widget-bottom: 28px;
+  --widget-right: 28px;
+  --z-widget: 2147483645;
+  --z-panel: 2147483646;
+  --z-overlay: 2147483647;
+
+  /* Vant overrides — aligned with our premium system */
+  --van-primary-color: var(--cl-primary);
+  --van-button-primary-background: var(--cl-primary);
+  --van-button-primary-border-color: transparent;
+  --van-button-primary-box-shadow: var(--shadow-btn);
+  --van-cell-font-size: var(--font-size-sm);
+  --van-cell-group-background: transparent;
+  --van-tabs-bottom-bar-color: var(--cl-primary);
+  --van-nav-bar-icon-color: #fff;
+  --van-notify-primary-background: var(--cl-primary);
+  --van-badge-background: var(--cl-danger);
+  --van-badge-font-size: 10px;
+  --van-badge-padding: 0 4px;
+  --van-tag-border-radius: var(--radius-xs);
+  --van-field-input-font-size: var(--font-size-base);
+}
+
+/* Reset */
+#ccsim-sdk-root *,
+#ccsim-sdk-root *::before,
+#ccsim-sdk-root *::after {
+  box-sizing: border-box;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Vant icons font */
+#ccsim-sdk-root .van-icon,
+#ccsim-sdk-root .van-icon::before {
+  font-family: var(--van-icon-font-family, "vant-icon");
+}
+
+/* ====== Shared Animations ====== */
+@keyframes ccsim-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes ccsim-slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes ccsim-slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes ccsim-msg-enter {
+  0% { opacity: 0; transform: scale(0.92) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes ccsim-pop {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes ccsim-widget-pulse {
+  0% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+@keyframes ccsim-pulse-dot {
+  0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+@keyframes ccsim-shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+@keyframes ccsim-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes ccsim-badge-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* Scrollbar — thin, subtle */
+#ccsim-sdk-root .scrollbar-thin::-webkit-scrollbar {
+  width: 5px;
+}
+#ccsim-sdk-root .scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+#ccsim-sdk-root .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--cl-gray-200);
+  border-radius: 3px;
+}
+#ccsim-sdk-root .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--cl-gray-300);
+}
+#ccsim-sdk-root textarea::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Focus ring */
+#ccsim-sdk-root *:focus-visible {
+  outline: 2px solid var(--cl-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}

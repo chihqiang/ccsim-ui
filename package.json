@@ -1,0 +1,64 @@
+{
+  "name": "@chihqiang/ccsim-ui",
+  "version": "0.0.1",
+  "description": "基于 TypeScript 开发，支持访客/客服双角色即时通信，内置完整开箱即用聊天UI组件。",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/ccsim-ui.umd.js",
+  "module": "./dist/ccsim-ui.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/ccsim-ui.es.js",
+      "require": "./dist/ccsim-ui.umd.js"
+    },
+    "./style": "./dist/ccsim-ui.css"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "keywords": [
+    "ccsim",
+    "customer-service",
+    "live-chat",
+    "sdk",
+    "vue3",
+    "typescript",
+    "visitor",
+    "agent",
+    "chat-widget",
+    "ui-component"
+  ],
+  "author": "chihqiang",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chihqiang/ccsim-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chihqiang/ccsim-ui/issues"
+  },
+  "homepage": "https://github.com/chihqiang/ccsim-ui#readme",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-vue": "^5.2.0",
+    "typescript": "^5.9.3",
+    "uuid": "^14.0.1",
+    "vant": "^4.9.24",
+    "vite": "^6.3.0",
+    "vite-plugin-dts": "^4.5.4",
+    "vue": "^3.5.0",
+    "vue-i18n": "^11.4.2",
+    "vue-tsc": "^2.0.0"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ]
+}
