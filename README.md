@@ -3,6 +3,21 @@
 基于 TypeScript 开发，支持访客/客服双角色即时通信，
 内置完整开箱即用聊天 UI 组件（基于 Vue 3 + Vant）。
 
+## 服务端
+
+本 SDK 需配合后端服务 [ccsim-svr](https://github.com/chihqiang/ccsim-svr) 使用。
+
+ccsim-svr 是基于 Go 语言开发的即时通信服务端，提供 WebSocket 长连接管理、会话分配、消息路由、离线推送等能力，支持单机与 Redis 集群部署。
+
+```bash
+# 克隆并启动
+git clone https://github.com/chihqiang/ccsim-svr.git
+cd ccsim-svr
+go run .
+```
+
+启动后默认监听 `0.0.0.0:8080`，WebSocket 端点为 `/ws`。
+
 ## 安装
 
 ```bash
