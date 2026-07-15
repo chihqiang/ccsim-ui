@@ -191,6 +191,7 @@
       setTestStatus('t3', 'pass')
       updateConnInfo('infoConnStatus', '已就绪')
       document.getElementById('connStepLabel').textContent = '✓ 就绪'
+      updateConnInfo('statConnId',  sdk.getStore()?.connId || '-')
       updateConnInfo('statSessionId', sdk.sessionId || '-')
       updateConnInfo('statVisitorId', sdk.visitorId || '-')
       sessionId = sdk.sessionId
