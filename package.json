@@ -1,6 +1,6 @@
 {
   "name": "@chihqiang/ccsim-ui",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "基于 TypeScript 开发，支持访客/客服双角色即时通信，内置完整开箱即用聊天UI组件。",
   "license": "Apache-2.0",
   "type": "module",
@@ -44,12 +44,14 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "run-s typecheck build"
+    "format": "prettier --write src/",
+    "prepublishOnly": "run-s format typecheck  build"
   },
   "devDependencies": {
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-vue": "^5.2.0",
     "npm-run-all2": "^8.0.4",
+    "prettier": "^3.9.5",
     "typescript": "^5.9.3",
     "uuid": "^14.0.1",
     "vant": "^4.9.24",

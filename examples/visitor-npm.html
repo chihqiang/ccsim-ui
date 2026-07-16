@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ccsim 访客端 — npm</title>
+    <link rel="stylesheet" href="common.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Ccsim 访客端 <span class="badge">npm</span></h1>
+
+      <div class="grid">
+        <div class="card">
+          <h2>连接状态 <span class="step-count" id="connStepLabel">-</span></h2>
+          <div class="stats">
+            <div class="stat">
+              <div class="num blue" id="statConnId">-</div>
+              <div class="label">connId</div>
+            </div>
+            <div class="stat">
+              <div class="num blue" id="statSessionId">-</div>
+              <div class="label">sessionId</div>
+            </div>
+            <div class="stat">
+              <div class="num blue" id="statVisitorId">-</div>
+              <div class="label">visitorId</div>
+            </div>
+          </div>
+          <ul class="test-list" id="testList">
+            <li>
+              <span class="label">1. WebSocket 连接</span
+              ><span class="status status-wait" id="t1">等待</span>
+            </li>
+            <li>
+              <span class="label">2. 认证成功 (auth_ok)</span
+              ><span class="status status-wait" id="t2">等待</span>
+            </li>
+            <li>
+              <span class="label">3. 会话已就绪 (allSet)</span
+              ><span class="status status-wait" id="t3">等待</span>
+            </li>
+            <li>
+              <span class="label">4. 客服在线状态</span
+              ><span class="status status-wait" id="t4">等待</span>
+            </li>
+          </ul>
+          <div class="summary-bar">
+            <span class="item"
+              ><span class="dot dot-green"></span> <span id="testPass">0</span> 通过</span
+            >
+            <span class="item"
+              ><span class="dot dot-red"></span> <span id="testFail">0</span> 失败</span
+            >
+            <span class="item"
+              ><span class="dot dot-gray"></span> <span id="testTotal">4</span> 总计</span
+            >
+          </div>
+          <div class="row">
+            <button class="btn btn-primary" id="btnSendMsg">发送测试消息</button>
+            <button class="btn btn-default" id="btnReconnect" disabled>重新连接</button>
+          </div>
+          <div class="row" style="margin-top: 6px">
+            <input
+              type="text"
+              id="inputTestMsg"
+              value="您好，我有个问题想咨询"
+              placeholder="消息内容"
+            />
+          </div>
+        </div>
+        <div class="card">
+          <h2>客服状态</h2>
+          <ul class="test-list">
+            <li><span class="label">在线客服数</span><span id="infoOnlineCount">-</span></li>
+            <li><span class="label">是否有在线客服</span><span id="infoHasOnline">-</span></li>
+            <li><span class="label">连接状态</span><span id="infoConnStatus">初始</span></li>
+            <li><span class="label">SDK 版本</span><span id="infoVersion">-</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card full-width">
+        <h2>事件日志</h2>
+        <div class="log" id="logEl"><div class="t-debug">等待连接...</div></div>
+      </div>
+
+      <div class="card full-width" style="font-size: 12px; color: #999">
+        <strong>加载方式：</strong><code>import { VisitorSDK } from '@chihqiang/ccsim-ui'</code>（需
+        <code>npm run dev</code>）
+      </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script type="module">
+      import { VisitorSDK, CcsimError, SDK_VERSION } from '../src/index.ts'
+
+      const btnSendMsg = document.getElementById('btnSendMsg')
+      const btnReconnect = document.getElementById('btnReconnect')
+      const inputTestMsg = document.getElementById('inputTestMsg')
+
+      window.ExampleUtils.init({ testIds: ['t1', 't2', 't3', 't4'] })
+      const { log, setTestStatus, updateConnInfo } = window.ExampleUtils
+
+      log('创建 SDK 实例...', 'debug')
+
+      const sdk = new VisitorSDK({
+        tenant_no: 'test',
+        wsHost: 'ws://localhost:8080/ws',
+        visitor_uuid: 'test-visitor-' + Date.now(),
+        nickname: '测试访客-' + Math.floor(Math.random() * 10000),
+        platform: 'web',
+        debug: true,
+      })
+
+      setTestStatus('t1', 'progress')
+      updateConnInfo('infoConnStatus', '连接中')
+
+      sdk.on('allSet', () => {
+        log('allSet — SDK 初始化完成', 'info')
+        setTestStatus('t3', 'pass')
+        updateConnInfo('infoConnStatus', '已就绪')
+        document.getElementById('connStepLabel').textContent = '✓ 就绪'
+        updateConnInfo('statConnId', sdk.getStore()?.connId || '-')
+        updateConnInfo('statSessionId', sdk.sessionId || '-')
+        updateConnInfo('statVisitorId', sdk.visitorId || '-')
+        btnReconnect.disabled = false
+        btnSendMsg.disabled = false
+      })
+
+      sdk.on('agentStatus', (onlineCount, hasOnlineAgent) => {
+        log(`客服状态: onlineCount=${onlineCount}, hasOnline=${hasOnlineAgent}`, 'event')
+        updateConnInfo('infoOnlineCount', onlineCount)
+        updateConnInfo('infoHasOnline', hasOnlineAgent ? '是' : '否')
+        setTestStatus('t4', 'pass')
+      })
+
+      sdk.on('error', (err) => {
+        const msg = err instanceof CcsimError ? err.toEvent() : (err?.message ?? String(err))
+        log('错误: ' + msg, 'error')
+      })
+
+      sdk.on('messageError', (error) => {
+        log('消息发送失败: ' + error, 'error')
+      })
+
+      sdk.on('disconnected', (code, reason) => {
+        log(`连接断开: code=${code}, reason=${reason}`, 'warn')
+        updateConnInfo('infoConnStatus', '已断开')
+        document.getElementById('connStepLabel').textContent = '✗ 断开'
+        btnReconnect.disabled = false
+      })
+
+      sdk.on('reconnecting', (attempt, max) => {
+        log(`重连中: ${attempt}/${max}`, 'warn')
+      })
+      sdk.on('reconnected', () => {
+        log('重连成功', 'info')
+      })
+
+      let connCheckInterval = setInterval(() => {
+        if (sdk.connected && !window.ExampleUtils.tests.t1.passed) {
+          setTestStatus('t1', 'pass')
+          log('WebSocket 已连接', 'info')
+        }
+      }, 300)
+
+      sdk.on('allSet', () => {
+        if (connCheckInterval) {
+          clearInterval(connCheckInterval)
+          connCheckInterval = null
+        }
+        if (!window.ExampleUtils.tests.t2.passed) {
+          setTestStatus('t2', 'pass')
+          log('认证成功 (auth_ok)', 'info')
+        }
+      })
+
+      btnSendMsg.addEventListener('click', () => {
+        const content = inputTestMsg.value.trim()
+        if (!content) {
+          log('请输入消息内容', 'warn')
+          return
+        }
+        if (!sdk.connected) {
+          log('未连接，无法发送', 'warn')
+          return
+        }
+        sdk.sendChat(content)
+        log(`发送消息: "${content}"`, 'event')
+      })
+
+      btnReconnect.addEventListener('click', () => {
+        window.location.reload()
+      })
+
+      updateConnInfo('infoVersion', SDK_VERSION)
+      log('SDK 已创建，等待连接...', 'debug')
+      log('提示: 打开 agent-npm.html 并让客服上线来测试完整链路', 'info')
+
+      let autoMsgSent = false
+      sdk.on('allSet', () => {
+        if (!autoMsgSent) {
+          autoMsgSent = true
+          setTimeout(() => {
+            const testMsg = inputTestMsg.value.trim() || '您好，我有个问题想咨询'
+            if (sdk.connected) {
+              sdk.sendChat(testMsg)
+              log(`[自动] 发送测试消息: "${testMsg}"`, 'event')
+            }
+          }, 1500)
+        }
+      })
+    </script>
+  </body>
+</html>
