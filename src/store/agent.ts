@@ -3,8 +3,8 @@ import type { ChatMessageItem, SessionListItem } from '@/types/store'
 import { SDKStatusEnum } from '@/types/sdk'
 import { clearSeenMsgIds } from '@/utils/dedup'
 import type { WaitingSessionListItem } from '@/types/serverMessage'
-import type { RightPanelTab } from '@/types/right-panel'
-import { DEFAULT_TAB_KEY } from '@/types/right-panel'
+import type { RightPanelTab } from '@/types/rightPanel'
+import { DEFAULT_TAB_KEY } from '@/types/rightPanel'
 import type { ToolbarItem } from '@/types/toolbar'
 
 export interface AgentStoreState {

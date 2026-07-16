@@ -27,9 +27,9 @@ export type { SessionStatus } from '@/types/store'
 
 // Plugin types
 export type { ToolbarItem, ToolbarContext } from '@/types/toolbar'
-export type { PanelSection, PanelSectionContext } from '@/types/panel-section'
-export type { RightPanelTab } from '@/types/right-panel'
-export { DEFAULT_TAB_KEY, DEFAULT_TAB_ORDER } from '@/types/right-panel'
+export type { PanelSection, PanelSectionContext } from '@/types/panelSection'
+export type { RightPanelTab } from '@/types/rightPanel'
+export { DEFAULT_TAB_KEY, DEFAULT_TAB_ORDER } from '@/types/rightPanel'
 
 // Events
 export type { SdkEvents, SdkEventName } from '@/types/events'

@@ -3,7 +3,7 @@ import type { ChatMessageItem } from '@/types/store'
 import { SDKStatusEnum } from '@/types/sdk'
 import { clearSeenMsgIds } from '@/utils/dedup'
 import type { ToolbarItem } from '@/types/toolbar'
-import type { PanelSection } from '@/types/panel-section'
+import type { PanelSection } from '@/types/panelSection'
 
 export interface VisitorStoreState {
   status: SDKStatusEnum

@@ -76,7 +76,7 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { ChatMessageItem } from '@/types/store'
-import ChatMessage from './ChatMessage.vue'
+import ChatMessage from './chatMessage.vue'
 
 const { t } = useI18n()
 

@@ -13,8 +13,8 @@ export {
   PAGINATION_TIMEOUT,
 } from './sdk'
 export type { VisitorInitOptions, AgentInitOptions } from './options'
-export type { RightPanelTab } from './right-panel'
-export { DEFAULT_TAB_KEY, DEFAULT_TAB_ORDER } from './right-panel'
+export type { RightPanelTab } from './rightPanel'
+export { DEFAULT_TAB_KEY, DEFAULT_TAB_ORDER } from './rightPanel'
 
 export { ClientMessageTypeEnum } from './clientMessage'
 export type {

@@ -11,7 +11,7 @@
 import { store } from '@/store/visitor'
 import { getInstance } from '@/visitorSdk'
 import ChatWidget from '@/ui/chatWidget.vue'
-import VisitorPanel from './VisitorPanel.vue'
+import VisitorPanel from './visitorPanel.vue'
 
 const sdk = getInstance()
 </script>
