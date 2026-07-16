@@ -21,11 +21,12 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'ccsim-ui',
+      name: 'CcsimUI',
       formats: ['umd', 'es'],
       fileName: (format) => `ccsim-ui.${format}.js`,
     },
     cssCodeSplit: false,
+    sourcemap: true,
     minify: 'esbuild',
     cssMinify: 'esbuild',
     rollupOptions: {
@@ -36,6 +37,6 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    open: '/visitor.html',
+    open: '/examples/index.html',
   },
 })

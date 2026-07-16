@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ccsim UI — 示例导航</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; color: #333; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .container { max-width: 640px; width: 100%; padding: 24px; }
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+    .group { margin-bottom: 24px; }
+    .group-title { font-size: 13px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .card { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+    .card a { display: flex; align-items: center; padding: 14px 16px; text-decoration: none; color: #333; border-bottom: 1px solid #f5f5f5; transition: background 0.15s; }
+    .card a:last-child { border-bottom: none; }
+    .card a:hover { background: #fafafa; }
+    .card a .badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; color: #fff; margin-right: 12px; min-width: 40px; text-align: center; }
+    .badge-visitor { background: #1890ff; }
+    .badge-agent { background: #722ed1; }
+    .card a .label { flex: 1; font-size: 14px; }
+    .card a .desc { font-size: 12px; color: #999; }
+    .card a .arrow { color: #ccc; font-size: 18px; }
+    .tip { background: #fffbe6; border: 1px solid #ffe58f; border-radius: 6px; padding: 12px 16px; font-size: 13px; color: #8c6e00; line-height: 1.6; }
+    code { background: #f5f5f5; padding: 1px 4px; border-radius: 3px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Ccsim UI</h1>
+    <p class="subtitle">选择一种方式打开访客端或客服端测试页面</p>
+
+    <div class="group">
+      <div class="group-title">NPM — 本地开发（vite dev server）</div>
+      <div class="card">
+        <a href="visitor-npm.html">
+          <span class="badge badge-visitor">访客</span>
+          <span class="label">visitor-npm.html</span>
+          <span class="desc">import from src</span>
+          <span class="arrow">&rsaquo;</span>
+        </a>
+        <a href="agent-npm.html">
+          <span class="badge badge-agent">客服</span>
+          <span class="label">agent-npm.html</span>
+          <span class="desc">import from src</span>
+          <span class="arrow">&rsaquo;</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">UMD — script 标签加载</div>
+      <div class="card">
+        <a href="visitor-umd.html">
+          <span class="badge badge-visitor">访客</span>
+          <span class="label">visitor-umd.html</span>
+          <span class="desc">dist/ccsim-ui.umd.js</span>
+          <span class="arrow">&rsaquo;</span>
+        </a>
+        <a href="agent-umd.html">
+          <span class="badge badge-agent">客服</span>
+          <span class="label">agent-umd.html</span>
+          <span class="desc">dist/ccsim-ui.umd.js</span>
+          <span class="arrow">&rsaquo;</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">ES Module — import map</div>
+      <div class="card">
+        <a href="visitor-esm.html">
+          <span class="badge badge-visitor">访客</span>
+          <span class="label">visitor-esm.html</span>
+          <span class="desc">dist/ccsim-ui.es.js</span>
+          <span class="arrow">&rsaquo;</span>
+        </a>
+        <a href="agent-esm.html">
+          <span class="badge badge-agent">客服</span>
+          <span class="label">agent-esm.html</span>
+          <span class="desc">dist/ccsim-ui.es.js</span>
+          <span class="arrow">&rsaquo;</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="tip">
+      <strong>前置条件：</strong>后端服务 <code>go run .</code> + 前端开发服务 <code>npm run dev</code>（仅 npm 方式需要）。
+      UMD / ESM 方式需先 <code>npm run build</code> 生成 dist 产物。
+    </div>
+  </div>
+</body>
+</html>

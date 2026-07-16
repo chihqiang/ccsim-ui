@@ -1,12 +1,13 @@
-import type { AgentInitOptions } from '@/agent/types'
-import { ClientMessageTypeEnum } from '@/agent/types'
-import { t } from '@/core/i18n'
+import type { AgentInitOptions } from '@/types'
+import { ClientMessageTypeEnum } from '@/types'
+import { t } from '@/i18n'
+import { Role } from '@/types/sdk'
 
 export function buildAgentAuth(opts: AgentInitOptions) {
   return {
     type: ClientMessageTypeEnum.AUTH,
     tenant_no: opts.tenant_no,
-    role: 'agent',
+    role: Role.AGENT,
     agent_account: opts.account,
     agent_password: opts.password,
   }

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ccsim 客服端 — ESM</title>
+  <link rel="stylesheet" href="../dist/ccsim-ui.css" />
+  <link rel="stylesheet" href="common.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Ccsim 客服端 <span class="badge">ESM</span></h1>
+
+    <div class="grid">
+      <div class="card">
+        <h2>连接状态 <span class="step-count" id="connStepLabel">-</span></h2>
+        <div class="stats">
+          <div class="stat"><div class="num purple" id="statAgentId">-</div><div class="label">agentId</div></div>
+          <div class="stat"><div class="num blue" id="statConnId">-</div><div class="label">connId</div></div>
+          <div class="stat"><div class="num" id="statOnlineStatus">-</div><div class="label">在线</div></div>
+        </div>
+        <ul class="test-list">
+          <li><span class="label">1. WebSocket 连接</span><span class="status status-wait" id="t1">等待</span></li>
+          <li><span class="label">2. 认证成功 (auth_ok)</span><span class="status status-wait" id="t2">等待</span></li>
+          <li><span class="label">3. SDK 就绪 (allSet)</span><span class="status status-wait" id="t3">等待</span></li>
+          <li><span class="label">4. 自动上班已发送</span><span class="status status-wait" id="t4">等待</span></li>
+          <li><span class="label">5. 会话列表已拉取</span><span class="status status-wait" id="t5">等待</span></li>
+        </ul>
+        <div class="summary-bar">
+          <span class="item"><span class="dot dot-green"></span> <span id="testPass">0</span> 通过</span>
+          <span class="item"><span class="dot dot-red"></span> <span id="testFail">0</span> 失败</span>
+          <span class="item"><span class="dot dot-gray"></span> <span id="testTotal">5</span> 总计</span>
+        </div>
+        <div class="row">
+          <button class="btn btn-default" id="btnSendMsg">发送消息</button>
+          <button class="btn btn-default" id="btnRefreshSessions">刷新会话</button>
+          <button class="btn btn-default" id="btnToggleOnline">上班/下班</button>
+          <button class="btn btn-primary" id="btnAcceptSession">接入会话</button>
+        </div>
+        <div class="row" style="margin-top:6px;">
+          <input type="text" id="inputTestMsg" value="您好，我是客服，请问有什么可以帮助您的？" placeholder="消息内容" style="flex:1;padding:4px 8px;border:1px solid #d9d9d9;border-radius:4px;font-size:12px;" />
+          <input type="text" id="inputAcceptSid" value="" placeholder="会话ID" style="width:100px;padding:4px 8px;border:1px solid #d9d9d9;border-radius:4px;font-size:12px;" />
+        </div>
+      </div>
+      <div class="card">
+        <h2>会话列表 <span class="step-count" id="sessionCount">0</span></h2>
+        <div id="sessionListContainer" style="font-size:12px;max-height:220px;overflow-y:auto;margin-bottom:8px;">
+          <div style="color:#999;padding:20px 0;text-align:center;">暂无会话</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card full-width">
+      <h2>事件日志</h2>
+      <div class="log" id="logEl"><div class="t-debug">等待连接...</div></div>
+    </div>
+
+    <div class="card full-width" style="font-size:12px;color:#999;">
+      <strong>加载方式：</strong><code>import { AgentSDK } from '@chihqiang/ccsim-ui'</code>（import map → <code>dist/ccsim-ui.es.js</code>）
+    </div>
+  </div>
+
+  <script type="importmap">
+  { "imports": { "@chihqiang/ccsim-ui": "../dist/ccsim-ui.es.js" } }
+  </script>
+  <script src="common.js"></script>
+  <script type="module">
+    import { AgentSDK, CcsimError } from '@chihqiang/ccsim-ui'
+
+    var btnSendMsg = document.getElementById('btnSendMsg')
+    var btnRefreshSessions = document.getElementById('btnRefreshSessions')
+    var btnToggleOnline = document.getElementById('btnToggleOnline')
+    var btnAcceptSession = document.getElementById('btnAcceptSession')
+    var inputTestMsg = document.getElementById('inputTestMsg')
+    var inputAcceptSid = document.getElementById('inputAcceptSid')
+
+    window.ExampleUtils.init({ testIds: ['t1', 't2', 't3', 't4', 't5'] })
+    var log = window.ExampleUtils.log
+    var setTestStatus = window.ExampleUtils.setTestStatus
+
+    log('创建 Agent SDK 实例...', 'debug')
+
+    var sdk = new AgentSDK({
+      tenant_no: 'test',
+      account: 'admin',
+      password: 'admin123',
+      wsHost: 'ws://localhost:8080/ws',
+      debug: true,
+    })
+
+    setTestStatus('t1', 'progress')
+
+    sdk.on('allSet', function() {
+      log('allSet — SDK 初始化完成', 'info')
+      setTestStatus('t2', 'pass')
+      setTestStatus('t3', 'pass')
+      document.getElementById('statAgentId').textContent = sdk.agentId || '-'
+      document.getElementById('statConnId').textContent = sdk.getStore()?.connId || '-'
+      document.getElementById('connStepLabel').textContent = '✓ 就绪'
+      setTimeout(function() { sdk.requestSessionList(1, 50); setTestStatus('t5', 'progress') }, 1000)
+    })
+
+    sdk.on('agentStatus', function(onlineCount, hasOnlineAgent) {
+      document.getElementById('statOnlineStatus').textContent = hasOnlineAgent ? '在线' : '离线'
+      if (hasOnlineAgent) setTestStatus('t4', 'pass')
+    })
+
+    sdk.on('error', function(err) {
+      var msg = err instanceof CcsimError ? err.toEvent() : (err?.message ?? String(err))
+      log('错误: ' + msg, 'error')
+    })
+
+    sdk.on('sessionListUpdated', function() {
+      setTestStatus('t5', 'pass')
+    })
+
+    sdk.on('disconnected', function(code, reason) {
+      log('连接断开: code=' + code, 'warn')
+      document.getElementById('connStepLabel').textContent = '✗ 断开'
+    })
+
+    btnSendMsg.addEventListener('click', function() {
+      var content = inputTestMsg.value.trim()
+      if (!content || !sdk.connected || !sdk.currentSessionId) return
+      sdk.sendChat(content)
+      log('发送消息: ' + content, 'event')
+    })
+
+    btnRefreshSessions.addEventListener('click', function() {
+      if (sdk.connected) sdk.requestSessionList(1, 50)
+    })
+
+    btnToggleOnline.addEventListener('click', function() {
+      if (!sdk.connected) return
+      var isOnline = sdk.getStore()?.isAgentOnline ?? false
+      isOnline ? sdk.setAgentOffline() : sdk.setAgentOnline()
+    })
+
+    btnAcceptSession.addEventListener('click', function() {
+      var sid = parseInt(inputAcceptSid.value.trim(), 10)
+      if (!isNaN(sid)) sdk.acceptSession(sid)
+    })
+
+    var connCheck = setInterval(function() {
+      if (sdk.connected && !window.ExampleUtils.tests.t1.passed) { setTestStatus('t1', 'pass'); log('WebSocket 已连接', 'info') }
+    }, 300)
+    sdk.on('allSet', function() { clearInterval(connCheck) })
+
+    log('Agent SDK (ESM) 已创建，正在连接...', 'info')
+    log('账号: admin / admin123', 'debug')
+  </script>
+</body>
+</html>

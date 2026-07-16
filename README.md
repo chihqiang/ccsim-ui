@@ -10,7 +10,6 @@
 ccsim-svr 是基于 Go 语言开发的即时通信服务端，提供 WebSocket 长连接管理、会话分配、消息路由、离线推送等能力，支持单机与 Redis 集群部署。
 
 ```bash
-# 克隆并启动
 git clone https://github.com/chihqiang/ccsim-svr.git
 cd ccsim-svr
 go run .
@@ -22,6 +21,41 @@ go run .
 
 ```bash
 npm install @chihqiang/ccsim-ui
+```
+
+## CDN 加载
+
+无需 npm，直接通过 CDN 使用：
+
+### HTML script（UMD）
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chihqiang/ccsim-ui@latest/dist/ccsim-ui.css" />
+<script src="https://cdn.jsdelivr.net/npm/@chihqiang/ccsim-ui@latest/dist/ccsim-ui.umd.js"></script>
+<script>
+  const sdk = new CcsimUI.VisitorSDK({
+    tenant_no: 'your_tenant',
+    wsHost: 'wss://your-server.com/ws',
+    nickname: '访客用户',
+    platform: 'web',
+  })
+</script>
+```
+
+### ES Module（import map）
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chihqiang/ccsim-ui@latest/dist/ccsim-ui.css" />
+<script type="importmap">
+{
+  "imports": {
+    "@chihqiang/ccsim-ui": "https://cdn.jsdelivr.net/npm/@chihqiang/ccsim-ui@latest/dist/ccsim-ui.es.js"
+  }
+}
+</script>
+<script type="module">
+  import { VisitorSDK } from '@chihqiang/ccsim-ui'
+</script>
 ```
 
 ## 快速开始
@@ -37,6 +71,7 @@ const sdk = new VisitorSDK({
   wsHost: 'wss://your-server.com/ws',
   nickname: '访客用户',
   phone: '13800138000',
+  platform: 'web',
 })
 
 sdk.on('allSet', () => {
@@ -72,11 +107,13 @@ sdk.on('newSession', (sessionId) => {
 })
 ```
 
+---
+
 ## API 参考
 
 ### VisitorSDK
 
-#### VisitorSDK 初始化选项
+#### 初始化选项
 
 ```typescript
 new VisitorSDK(options: VisitorInitOptions)
@@ -86,16 +123,16 @@ new VisitorSDK(options: VisitorInitOptions)
 |------|------|------|------|
 | `tenant_no` | `string` | 是 | 租户标识 |
 | `wsHost` | `string \| (() => string)` | 否 | WebSocket 地址或工厂函数 |
-| `logLevel` | `debug` / `info` / `warn` / `error` / `silent` | 否 | 日志级别 |
+| `logLevel` | `'debug' \| 'info' \| 'warn' \| 'error' \| 'silent'` | 否 | 日志级别 |
 | `debug` | `boolean` | 否 | 等同于 `logLevel: 'debug'` |
-| `locale` | `zh-CN` / `en-US` | 否 | UI 语言，默认 `zh-CN` |
+| `locale` | `'zh-CN' \| 'en-US'` | 否 | UI 语言，默认 `zh-CN` |
 | `visitor_uuid` | `string` | 否 | 访客持久化标识 |
 | `nickname` | `string` | 否 | 显示名称 |
 | `phone` | `string` | 否 | 手机号 |
-| `platform` | `string` | 否 | 平台标识 |
+| `platform` | `string` | 是 | 平台标识 |
 | `metadata` | `Record<string, string>` | 否 | 自定义元数据 |
 
-#### VisitorSDK 属性
+#### 属性
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
@@ -103,11 +140,11 @@ new VisitorSDK(options: VisitorInitOptions)
 | `sessionId` | `number \| null` | 当前会话 ID |
 | `messages` | `ChatMessageItem[]` | 当前会话消息列表 |
 
-#### VisitorSDK 方法
+#### 方法
 
 | 方法 | 签名 | 说明 |
 |------|------|------|
-| `sendChat` | `(content, msgType?) => void` | 发送消息 |
+| `sendChat` | `(content: string, msgType?: MsgType) => void` | 发送消息，`MsgType = 'text' \| 'image' \| 'video' \| 'audio' \| 'file'` |
 | `requestSessionHistory` | `(sessionId, beforeSeq?, limit?) => void` | 请求历史消息 |
 | `closeSession` | `(sessionId) => void` | 关闭会话 |
 | `rateSession` | `(sessionId, rating) => void` | 满意度评价 |
@@ -116,11 +153,15 @@ new VisitorSDK(options: VisitorInitOptions)
 | `updateVisitorInfo` | `(info) => void` | 更新访客信息 |
 | `showPanel` | `() => void` | 显示聊天面板 |
 | `hidePanel` | `() => void` | 隐藏聊天面板 |
+| `registerToolbar` | `(item: ToolbarItem) => void` | 注册工具栏按钮 |
+| `unregisterToolbar` | `(key: string) => void` | 注销工具栏按钮 |
+| `registerPanelSection` | `(section: PanelSection) => void` | 注册面板区块 |
+| `unregisterPanelSection` | `(key: string) => void` | 注销面板区块 |
 | `on` | `(event, cb) => this` | 监听事件 |
 | `off` | `(event, cb) => this` | 取消监听 |
 | `destroy` | `() => Promise<void>` | 断开连接并清理 |
 
-#### VisitorSDK 事件
+#### 事件
 
 | 事件 | 回调参数 | 说明 |
 |------|----------|------|
@@ -143,7 +184,7 @@ new VisitorSDK(options: VisitorInitOptions)
 
 ### AgentSDK
 
-#### AgentSDK 初始化选项
+#### 初始化选项
 
 ```typescript
 new AgentSDK(options: AgentInitOptions)
@@ -153,14 +194,15 @@ new AgentSDK(options: AgentInitOptions)
 |------|------|------|------|
 | `tenant_no` | `string` | 是 | 租户标识 |
 | `wsHost` | `string \| (() => string)` | 否 | WebSocket 地址或工厂函数 |
-| `logLevel` | `debug` / `info` / `warn` / `error` / `silent` | 否 | 日志级别 |
+| `logLevel` | `'debug' \| 'info' \| 'warn' \| 'error' \| 'silent'` | 否 | 日志级别 |
 | `debug` | `boolean` | 否 | 等同于 `logLevel: 'debug'` |
-| `locale` | `zh-CN` / `en-US` | 否 | UI 语言 |
+| `locale` | `'zh-CN' \| 'en-US'` | 否 | UI 语言 |
 | `account` | `string` | 是 | 客服账号 |
 | `password` | `string` | 是 | 客服密码 |
 | `autoOnlineWhenOpen` | `boolean` | 否 | 页面打开后自动上线 |
+| `activeTimeout` | `number` | 否 | 活跃超时（分钟），0 不检测，默认 15 |
 
-#### AgentSDK 属性
+#### 属性
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
@@ -168,13 +210,12 @@ new AgentSDK(options: AgentInitOptions)
 | `agentName` | `string` | 客服显示名称 |
 | `currentSessionId` | `number \| null` | 当前选中的会话 ID |
 | `messages` | `ChatMessageItem[]` | 当前会话消息列表 |
-| `optimisticMessages` | `ChatMessageItem[]` | 待确认的乐观消息 |
 
-#### AgentSDK 方法
+#### 方法
 
 | 方法 | 签名 | 说明 |
 |------|------|------|
-| `sendChat` | `(content, msgType?) => void` | 发送消息 |
+| `sendChat` | `(content: string, msgType?: MsgType) => void` | 发送消息，`MsgType = 'text' \| 'image' \| 'video' \| 'audio' \| 'file'` |
 | `setAgentOnline` | `() => void` | 上线 |
 | `setAgentOffline` | `() => void` | 下线 |
 | `acceptSession` | `(sessionId) => void` | 接待会话 |
@@ -186,11 +227,15 @@ new AgentSDK(options: AgentInitOptions)
 | `sendMessageRead` | `(sessionId, msgId, seqNum) => void` | 标记消息已读 |
 | `showPanel` | `() => void` | 显示面板 |
 | `hidePanel` | `() => void` | 隐藏面板 |
+| `registerToolbar` | `(item: ToolbarItem) => void` | 注册工具栏按钮 |
+| `unregisterToolbar` | `(key: string) => void` | 注销工具栏按钮 |
+| `registerRightPanelTab` | `(tab: RightPanelTab) => void` | 注册右侧标签页 |
+| `unregisterRightPanelTab` | `(key: string) => void` | 注销右侧标签页 |
 | `on` | `(event, cb) => this` | 监听事件 |
 | `off` | `(event, cb) => this` | 取消监听 |
 | `destroy` | `() => Promise<void>` | 下线并断开连接 |
 
-#### AgentSDK 事件
+#### 事件
 
 | 事件 | 回调参数 | 说明 |
 |------|----------|------|
@@ -208,26 +253,252 @@ new AgentSDK(options: AgentInitOptions)
 | `agentStatus` | `(onlineCount, hasOnlineAgent)` | 在线客服数量变化 |
 | `typingPush` | `(sessionId, senderRole, senderId)` | 对方正在输入 |
 | `messageReadPush` | `(sessionId, readerRole, readerId, msgId, seqNum)` | 消息已读回执 |
-| `visitorInfoUpdated` | `(sessionId, visitorId, nickname?, phone?, avatar?)` | 访客信息已更新 |
+| `visitorInfoUpdated` | `(visitorId, nickname?, phone?, avatar?)` | 访客信息已更新 |
+| `activeTimeout` | `()` | 活跃超时自动下线 |
 
 ---
 
-### 工具函数
+## 插件系统
+
+SDK 提供三套插件注册 API，用于扩展工具栏、面板内容和标签页。
+
+### 工具栏（Toolbar）
+
+访客端和客服端均支持。工具栏按钮显示在聊天面板底部。
+
+```typescript
+import { VisitorSDK } from '@chihqiang/ccsim-ui'
+
+const sdk = new VisitorSDK({ /* ... */ })
+
+sdk.registerToolbar({
+  key: 'my-tool',
+  icon: '<svg viewBox="0 0 24 24">...</svg>',
+  label: '我的工具',
+  order: 100,
+  // 是否显示（可选）
+  show: (ctx) => ctx.sessionId != null,
+  // 按钮是否处于激活态（可选）
+  active: (ctx) => myState.isActive,
+  // 点击回调，ctx.active 表示当前是否已激活，可做 toggle
+  onClick: (ctx) => {
+    ctx.active ? close() : open()
+  },
+  // 关联面板区块（仅访客端，可选）
+  panel: {
+    component: () => import('./MyPanel.vue').then(m => m.default),
+    show: () => myState.isVisible,
+  },
+})
+
+// 注销（自动清理关联的 panel section）
+sdk.unregisterToolbar('my-tool')
+```
+
+#### ToolbarItem
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `key` | `string` | 是 | 唯一标识 |
+| `icon` | `string` | 是 | SVG 图标字符串 |
+| `label` | `string` | 是 | 按钮文案（无障碍用） |
+| `order` | `number` | 否 | 排序，默认 100 |
+| `show` | `(ctx: ToolbarContext) => boolean` | 否 | 是否显示 |
+| `active` | `(ctx: ToolbarContext) => boolean` | 否 | 是否激活态 |
+| `onClick` | `(ctx: ToolbarContext) => void` | 是 | 点击回调 |
+| `panel` | `{ component, show? }` | 否 | 关联面板（访客端） |
+
+#### ToolbarContext
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `sessionId` | `number \| null` | 当前会话 ID |
+| `visitorId` | `number \| null` | 访客 ID |
+| `agentId` | `number \| null` | 客服 ID |
+| `agentName` | `string` | 客服名称 |
+| `role` | `Role` | `'visitor'` 或 `'agent'` |
+| `active` | `boolean` | 当前按钮是否已激活 |
+
+---
+
+### 面板区块（PanelSection）
+
+访客端专用，用于在聊天面板中插入自定义内容区块。
+
+```typescript
+sdk.registerPanelSection({
+  key: 'my-section',
+  component: MyComponent,
+  order: 200,
+  show: (ctx) => ctx.sessionId != null,
+})
+
+sdk.unregisterPanelSection('my-section')
+```
+
+> 通常通过 `registerToolbar` 的 `panel` 字段自动注册，无需手动调用。
+
+#### PanelSection
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `key` | `string` | 是 | 唯一标识 |
+| `component` | `Component` | 是 | Vue 组件 |
+| `order` | `number` | 否 | 排序，默认 100 |
+| `show` | `(ctx) => boolean` | 否 | 是否显示 |
+
+---
+
+### 右侧标签页（RightPanelTab）
+
+客服端专用，用于在右侧面板中添加自定义标签页。
+
+```typescript
+import { AgentSDK } from '@chihqiang/ccsim-ui'
+
+const sdk = new AgentSDK({ /* ... */ })
+
+sdk.registerRightPanelTab({
+  key: 'my-tab',
+  label: '我的标签',
+  icon: '📊',
+  component: MyTabComponent,
+  order: 200,
+  onActivate: () => { /* 切到此 tab 时 */ },
+  onDeactivate: () => { /* 离开此 tab 时 */ },
+})
+
+sdk.unregisterRightPanelTab('my-tab')
+```
+
+#### RightPanelTab
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `key` | `string` | 是 | 唯一标识 |
+| `label` | `string` | 是 | 标签文案 |
+| `icon` | `string` | 否 | 图标 |
+| `component` | `Component` | 是 | Vue 组件 |
+| `order` | `number` | 否 | 排序，默认 100 |
+| `onActivate` | `() => void` | 否 | 切到此 tab 时回调 |
+| `onDeactivate` | `() => void` | 否 | 离开此 tab 时回调 |
+
+---
+
+## 工具函数
 
 ```typescript
 import {
   SDK_VERSION,
   getVisitorInstance,
   getAgentInstance,
+  setLocale,
+  CcsimError,
+  toCcsimError,
 } from '@chihqiang/ccsim-ui'
 
-// SDK 版本号
 console.log(SDK_VERSION)
 
-// 获取当前单例实例
 const visitor = getVisitorInstance()
 const agent = getAgentInstance()
 ```
+
+---
+
+## TypeScript
+
+包自带完整类型声明，无需额外安装 `@types` 包。
+
+```typescript
+import type {
+  VisitorInitOptions,
+  AgentInitOptions,
+  ToolbarItem,
+  RightPanelTab,
+  PanelSection,
+  PanelSectionContext,
+  ToolbarContext,
+  Role,
+  SenderTypeEnum,
+  SDKStatusEnum,
+  SdkEventName,
+  MsgType,
+  SessionStatus,
+  ChatMessageItem,
+} from '@chihqiang/ccsim-ui'
+```
+
+---
+
+## i18n
+
+支持中文（`zh-CN`）和英文（`en-US`），通过构造函数 `locale` 参数设置。
+
+```typescript
+const sdk = new VisitorSDK({
+  locale: 'en-US',
+})
+```
+
+运行时切换：
+
+```typescript
+import { setLocale } from '@chihqiang/ccsim-ui'
+setLocale('en-US')
+```
+
+---
+
+## 枚举与常量
+
+### Role
+
+| 值 | 说明 |
+|----|------|
+| `Role.VISITOR` | 访客 |
+| `Role.AGENT` | 客服 |
+
+### SenderTypeEnum
+
+| 值 | 说明 |
+|----|------|
+| `SenderTypeEnum.VISITOR` | 访客 |
+| `SenderTypeEnum.AGENT` | 客服 |
+| `SenderTypeEnum.SYSTEM` | 系统 |
+
+### MessageStatusEnum
+
+| 值 | 说明 |
+|----|------|
+| `PENDING` | 发送中（乐观消息） |
+| `DELIVERED` | 已送达 |
+| `FAILED` | 发送失败（5 秒超时） |
+
+### 常量
+
+| 常量 | 值 | 说明 |
+|------|-----|------|
+| `HEARTBEAT_INTERVAL` | `30000` | 心跳发送间隔（ms） |
+| `AUTH_TIMEOUT` | `10000` | 认证超时（ms） |
+| `CONNECTION_TIMEOUT` | `10000` | 连接超时（ms） |
+| `LOGIN_TIMEOUT` | `5000` | 登录超时（ms） |
+| `PAGINATION_TIMEOUT` | `10000` | 分页请求超时（ms） |
+| `OPTIMISTIC_TIMEOUT` | `5000` | 乐观消息超时（ms） |
+| `MESSAGE_MAX_LENGTH` | `2000` | 单条消息最大字符数 |
+| `MAX_MESSAGES_PER_CONVERSATION` | `500` | 每会话最大保留消息数 |
+| `MAX_RECONNECT_ATTEMPTS` | `10` | 最大重连次数 |
+| `RECONNECT_BASE_DELAY` | `1000` | 重连基础延迟（ms） |
+| `MAX_RECONNECT_DELAY` | `60000` | 重连最大延迟（ms） |
+
+---
+
+## 本地存储键
+
+| 键名 | 用途 |
+|------|------|
+| `ccsim_visitor_uuid` | 访客持久化 UUID |
+| `ccsim_session_id` | 访客当前会话 ID |
+| `ccsim_agent_should_online` | 客服自动上线状态 |
 
 ---
 
@@ -685,8 +956,6 @@ const agent = getAgentInstance()
 
 ---
 
-## 消息类型
-
 ### ClientMessageTypeEnum
 
 | 值 | 字符串 | 说明 |
@@ -731,80 +1000,3 @@ const agent = getAgentInstance()
 | `VISITOR_INFO_UPDATED` | `visitor_info_updated` | 访客信息更新 |
 | `SATISFACTION_RATE` | `satisfaction_rate` | 评价确认 |
 | `VISITOR_UPDATE_OK` | `visitor_update_ok` | 更新确认 |
-
-### MessageStatusEnum
-
-| 值 | 说明 |
-|----|------|
-| `PENDING` | 发送中（乐观消息） |
-| `DELIVERED` | 已送达 |
-| `FAILED` | 发送失败（5 秒超时） |
-
-### SenderTypeEnum
-
-| 值 | 说明 |
-|----|------|
-| `visitor` | 访客 |
-| `agent` | 客服 |
-| `system` | 系统 |
-
----
-
-## 常量
-
-| 常量 | 值 | 说明 |
-|------|-----|------|
-| `HEARTBEAT_INTERVAL` | `30000` | 心跳发送间隔（ms） |
-| `AUTH_TIMEOUT` | `10000` | 认证超时（ms） |
-| `CONNECTION_TIMEOUT` | `10000` | 连接超时（ms） |
-| `OPTIMISTIC_TIMEOUT` | `5000` | 乐观消息超时（ms） |
-| `MESSAGE_MAX_LENGTH` | `2000` | 单条消息最大字符数 |
-| `MAX_MESSAGES_PER_CONVERSATION` | `500` | 每会话最大保留消息数 |
-| `MAX_RECONNECT_ATTEMPTS` | `10` | 最大重连次数 |
-| `RECONNECT_BASE_DELAY` | `1000` | 重连基础延迟（ms） |
-| `MAX_RECONNECT_DELAY` | `60000` | 重连最大延迟（ms） |
-| `MIN_SEND_INTERVAL` | `500` | 最小发送间隔（ms） |
-
----
-
-## i18n
-
-支持中文（`zh-CN`）和英文（`en-US`），
-通过构造函数 `locale` 参数设置。
-
-```typescript
-const sdk = new VisitorSDK({
-  locale: 'en-US',
-  // ...
-})
-```
-
-运行时切换：
-
-```typescript
-import { setLocale } from '@chihqiang/ccsim-ui'
-setLocale('en-US')
-```
-
----
-
-## TypeScript
-
-包自带完整类型声明，无需额外安装 `@types` 包。
-
-```typescript
-import type {
-  VisitorInitOptions,
-  AgentInitOptions,
-} from '@chihqiang/ccsim-ui'
-```
-
----
-
-## 本地存储键
-
-| 键名 | 用途 |
-|------|------|
-| `ccsim_visitor_uuid` | 访客持久化 UUID |
-| `ccsim_session_id` | 访客当前会话 ID |
-| `ccsim_agent_should_online` | 客服自动上线状态 |
