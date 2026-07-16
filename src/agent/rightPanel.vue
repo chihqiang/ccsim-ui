@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { store } from '@/store/agent'
-import { DEFAULT_TAB_ORDER } from '@/types/right-panel'
+import { DEFAULT_TAB_ORDER } from '@/types/rightPanel'
 
 const tabs = computed(() => {
   return [...store.rightPanelTabs].sort(

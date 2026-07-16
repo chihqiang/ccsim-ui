@@ -110,7 +110,7 @@ import ConnectionStatus from '@/ui/connectionStatus.vue'
 import ImagePreview from '@/ui/imagePreview.vue'
 import Toolbar from '@/ui/toolbar.vue'
 import type { ToolbarContext } from '@/types/toolbar'
-import type { PanelSectionContext } from '@/types/panel-section'
+import type { PanelSectionContext } from '@/types/panelSection'
 import { Role } from '@/types/sdk'
 
 const sdk = getInstance()

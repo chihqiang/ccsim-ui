@@ -12,7 +12,7 @@
 import { store } from '@/store/agent'
 import { getInstance } from '@/agentSdk'
 import ChatWidget from '@/ui/chatWidget.vue'
-import AgentPanel from './AgentPanel.vue'
+import AgentPanel from './agentPanel.vue'
 
 const sdk = getInstance()
 </script>
