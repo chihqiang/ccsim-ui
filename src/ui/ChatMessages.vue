@@ -10,8 +10,19 @@
     <div v-if="!messages.length && !historyLoading" class="ccsim-msgs__empty">
       <svg class="ccsim-msgs__empty-icon" viewBox="0 0 80 80" fill="none">
         <rect x="8" y="12" width="64" height="48" rx="8" stroke="currentColor" stroke-width="2" />
-        <path d="M24 36h32M24 44h20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-        <path d="M40 60v8l-8-6h-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path
+          d="M24 36h32M24 44h20"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+        <path
+          d="M40 60v8l-8-6h-8"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
         <circle cx="56" cy="28" r="4" fill="currentColor" opacity="0.3" />
       </svg>
       <p class="ccsim-msgs__empty-title">{{ emptyTitle }}</p>
@@ -38,7 +49,16 @@
     <!-- Typing indicator -->
     <div v-if="typingVisible" class="ccsim-msgs__typing">
       <div class="ccsim-msgs__typing-avatar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
@@ -86,15 +106,19 @@ function scrollToBottom() {
   })
 }
 
-watch(() => props.messages, async (_new, old) => {
-  await nextTick()
-  if (!scrollRef.value) return
-  if ((!old || old.length === 0) && props.messages.length > 0) {
-    scrollToBottom()
-  } else if (isNearBottom.value) {
-    scrollToBottom()
-  }
-}, { deep: true })
+watch(
+  () => props.messages,
+  async (_new, old) => {
+    await nextTick()
+    if (!scrollRef.value) return
+    if ((!old || old.length === 0) && props.messages.length > 0) {
+      scrollToBottom()
+    } else if (isNearBottom.value) {
+      scrollToBottom()
+    }
+  },
+  { deep: true },
+)
 
 function onScroll() {
   const el = scrollRef.value
@@ -103,7 +127,10 @@ function onScroll() {
   if (el.scrollTop <= 40 && props.hasMoreHistory && !props.historyLoading) emit('loadMore')
 }
 
-interface MessageGroup { date: string; items: ChatMessageItem[] }
+interface MessageGroup {
+  date: string
+  items: ChatMessageItem[]
+}
 
 const groupedMessages = computed<MessageGroup[]>(() => {
   const groups: MessageGroup[] = []
@@ -128,7 +155,10 @@ function formatDateLabel(ts: number): string {
   const diff = (today.getTime() - msgDate.getTime()) / 86400000
   if (diff === 0) return ''
   if (diff === 1) return t('chat.yesterday')
-  if (diff < 7) { const wd = t('chat.weekdays') as unknown as string[]; return wd[d.getDay()] }
+  if (diff < 7) {
+    const wd = t('chat.weekdays') as unknown as string[]
+    return wd[d.getDay()]
+  }
   return t('chat.dateFormat', { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate() })
 }
 </script>
@@ -243,6 +273,10 @@ function formatDateLabel(ts: number): string {
   background: var(--cl-gray-400);
   animation: ccsim-pulse-dot 1.4s ease-in-out infinite;
 }
-.ccsim-msgs__typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.ccsim-msgs__typing-dot:nth-child(3) { animation-delay: 0.4s; }
+.ccsim-msgs__typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.ccsim-msgs__typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
 </style>

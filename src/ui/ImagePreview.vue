@@ -17,6 +17,8 @@ const emit = defineEmits<{ close: [] }>()
 
 const show = computed({
   get: () => props.visible,
-  set: (v) => { if (!v) emit('close') },
+  set: (v) => {
+    if (!v) emit('close')
+  },
 })
 </script>

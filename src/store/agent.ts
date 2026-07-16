@@ -33,14 +33,24 @@ export interface AgentStoreState {
 
 function createInitialState(): AgentStoreState {
   return {
-    status: SDKStatusEnum.DISCONNECTED, connId: null,
-    agentId: null, agentName: '', isAgentOnline: false,
-    sessions: [], currentSessionId: null,
-    optimisticMessages: [], messagesMap: {},
-    waitingSessions: [], unreadCount: 0, visitorTyping: false,
-    historyLoading: {}, _hasMoreHistory: {},
-    panelVisible: false, widgetVisible: true,
-    _hasMoreSessions: false, _sessionPage: 0,
+    status: SDKStatusEnum.DISCONNECTED,
+    connId: null,
+    agentId: null,
+    agentName: '',
+    isAgentOnline: false,
+    sessions: [],
+    currentSessionId: null,
+    optimisticMessages: [],
+    messagesMap: {},
+    waitingSessions: [],
+    unreadCount: 0,
+    visitorTyping: false,
+    historyLoading: {},
+    _hasMoreHistory: {},
+    panelVisible: false,
+    widgetVisible: true,
+    _hasMoreSessions: false,
+    _sessionPage: 0,
     rightPanelTabs: [],
     activeRightPanelTab: DEFAULT_TAB_KEY,
     toolbarItems: [],
@@ -49,4 +59,7 @@ function createInitialState(): AgentStoreState {
 
 export const store = reactive<AgentStoreState>(createInitialState())
 
-export function resetStore() { Object.assign(store, createInitialState()); clearSeenMsgIds() }
+export function resetStore() {
+  Object.assign(store, createInitialState())
+  clearSeenMsgIds()
+}

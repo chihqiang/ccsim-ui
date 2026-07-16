@@ -10,7 +10,13 @@ export class CcsimError extends Error {
   }
 
   toJSON(): Record<string, unknown> {
-    return { name: this.name, code: this.code, message: this.message, details: this.details, stack: this.stack }
+    return {
+      name: this.name,
+      code: this.code,
+      message: this.message,
+      details: this.details,
+      stack: this.stack,
+    }
   }
 
   toEvent(): string {
@@ -21,5 +27,7 @@ export class CcsimError extends Error {
 export function toCcsimError(err: unknown, fallbackCode = 'E999'): CcsimError {
   if (err instanceof CcsimError) return err
   const message = err instanceof Error ? err.message : String(err ?? 'unknown error')
-  return new CcsimError(fallbackCode, message, { cause: err instanceof Error ? err.stack : undefined })
+  return new CcsimError(fallbackCode, message, {
+    cause: err instanceof Error ? err.stack : undefined,
+  })
 }

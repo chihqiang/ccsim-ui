@@ -14,7 +14,7 @@ export function useAgentLogin() {
 
   const isLoggingIn = ref(false)
   const loginError = ref('')
-  const sdkRef = sdk  // 窄化类型，后续不需要判空
+  const sdkRef = sdk // 窄化类型，后续不需要判空
 
   let loginTimer: ReturnType<typeof setTimeout> | null = null
   let loginCleanup: (() => void) | null = null

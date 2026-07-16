@@ -81,7 +81,7 @@ function updateSessionMeta(
   senderRole: string,
   _ctx: HandlerContext,
 ) {
-  const session = store.sessions.find(s => s.sessionId === sessionId)
+  const session = store.sessions.find((s) => s.sessionId === sessionId)
   if (!session) return
 
   session.lastMsgContent = content

@@ -58,7 +58,10 @@ export class AgentHistoryBatchHandler implements MessageHandler<HistoryBatch> {
 
     // 超出上限时裁剪旧消息
     if (store.messagesMap[sid].length > MAX_MESSAGES_PER_CONVERSATION) {
-      store.messagesMap[sid].splice(0, store.messagesMap[sid].length - MAX_MESSAGES_PER_CONVERSATION)
+      store.messagesMap[sid].splice(
+        0,
+        store.messagesMap[sid].length - MAX_MESSAGES_PER_CONVERSATION,
+      )
     }
 
     store._hasMoreHistory[sid] = incoming.length >= (msg.count ?? 20)

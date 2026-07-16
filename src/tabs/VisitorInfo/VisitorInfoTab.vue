@@ -52,7 +52,9 @@
       </div>
       <div class="ccsim-visitor-tab__field">
         <span class="ccsim-visitor-tab__field-label">{{ $t('visitorInfo.userAgent') }}</span>
-        <span class="ccsim-visitor-tab__field-value ccsim-visitor-tab__field-value--truncate">{{ info.userAgent || '-' }}</span>
+        <span class="ccsim-visitor-tab__field-value ccsim-visitor-tab__field-value--truncate">{{
+          info.userAgent || '-'
+        }}</span>
       </div>
       <div class="ccsim-visitor-tab__field">
         <span class="ccsim-visitor-tab__field-label">{{ $t('visitorInfo.sessionId') }}</span>
@@ -64,13 +66,20 @@
       </div>
       <div class="ccsim-visitor-tab__field">
         <span class="ccsim-visitor-tab__field-label">{{ $t('visitorInfo.waitDuration') }}</span>
-        <span :class="['ccsim-visitor-tab__field-value', info.waitingSeconds ? 'ccsim-visitor-tab__field-value--warn' : '']">
+        <span
+          :class="[
+            'ccsim-visitor-tab__field-value',
+            info.waitingSeconds ? 'ccsim-visitor-tab__field-value--warn' : '',
+          ]"
+        >
           {{ info.waitingSeconds ? formatWaiting(info.waitingSeconds) : '-' }}
         </span>
       </div>
       <div class="ccsim-visitor-tab__field">
         <span class="ccsim-visitor-tab__field-label">{{ $t('visitorInfo.createdTime') }}</span>
-        <span class="ccsim-visitor-tab__field-value">{{ info.createdAt ? formatTime(info.createdAt) : '-' }}</span>
+        <span class="ccsim-visitor-tab__field-value">{{
+          info.createdAt ? formatTime(info.createdAt) : '-'
+        }}</span>
       </div>
       <div class="ccsim-visitor-tab__field">
         <span class="ccsim-visitor-tab__field-label">{{ $t('visitorInfo.assignee') }}</span>
@@ -117,16 +126,16 @@ function getField(obj: Record<string, unknown>, ...keys: string[]): unknown {
 
 const info = computed<VisitorInfo>(() => {
   if (!store.currentSessionId) return {}
-  const waiting = store.waitingSessions.find(
-    (s) => s.session_id === store.currentSessionId
-  ) as Record<string, unknown> | undefined
+  const waiting = store.waitingSessions.find((s) => s.session_id === store.currentSessionId) as
+    Record<string, unknown> | undefined
   if (waiting) {
     return {
       visitorAvatar: getField(waiting, 'visitorAvatar', 'visitor_avatar') as string,
       visitorNickname: getField(waiting, 'visitorNickname', 'visitor_nickname') as string,
       visitorPhone: getField(waiting, 'visitorPhone', 'visitor_phone') as string | undefined,
       visitorId: getField(waiting, 'visitorId', 'visitor_id') as number,
-      visitorExternalId: getField(waiting, 'visitorExternalId', 'visitor_external_id') as string | undefined,
+      visitorExternalId: getField(waiting, 'visitorExternalId', 'visitor_external_id') as
+        string | undefined,
       source: getField(waiting, 'source') as string,
       ip: getField(waiting, 'ip') as string | undefined,
       country: getField(waiting, 'country') as string | undefined,
@@ -139,16 +148,16 @@ const info = computed<VisitorInfo>(() => {
       status: 'waiting',
     }
   }
-  const active = store.sessions.find(
-    (s) => s.sessionId === store.currentSessionId
-  ) as Record<string, unknown> | undefined
+  const active = store.sessions.find((s) => s.sessionId === store.currentSessionId) as
+    Record<string, unknown> | undefined
   if (active) {
     return {
       visitorAvatar: getField(active, 'visitorAvatar', 'visitor_avatar') as string,
       visitorNickname: getField(active, 'visitorNickname', 'visitor_nickname') as string,
       visitorPhone: getField(active, 'visitorPhone', 'visitor_phone') as string | undefined,
       visitorId: getField(active, 'visitorId', 'visitor_id') as number,
-      visitorExternalId: getField(active, 'visitorExternalId', 'visitor_external_id') as string | undefined,
+      visitorExternalId: getField(active, 'visitorExternalId', 'visitor_external_id') as
+        string | undefined,
       source: getField(active, 'source') as string,
       ip: getField(active, 'ip') as string | undefined,
       country: getField(active, 'country') as string | undefined,
@@ -167,19 +176,27 @@ const info = computed<VisitorInfo>(() => {
 
 const statusText = computed(() => {
   switch (info.value.status) {
-    case 'waiting': return t('visitorInfo.statusWaiting')
-    case 'active': return t('visitorInfo.statusActive')
-    case 'closed': return t('visitorInfo.statusClosed')
-    default: return info.value.status || '-'
+    case 'waiting':
+      return t('visitorInfo.statusWaiting')
+    case 'active':
+      return t('visitorInfo.statusActive')
+    case 'closed':
+      return t('visitorInfo.statusClosed')
+    default:
+      return info.value.status || '-'
   }
 })
 
 const statusClass = computed(() => {
   switch (info.value.status) {
-    case 'waiting': return 'ccsim-visitor-tab__field-value--warn'
-    case 'active': return 'ccsim-visitor-tab__field-value--active'
-    case 'closed': return 'ccsim-visitor-tab__field-value--closed'
-    default: return ''
+    case 'waiting':
+      return 'ccsim-visitor-tab__field-value--warn'
+    case 'active':
+      return 'ccsim-visitor-tab__field-value--active'
+    case 'closed':
+      return 'ccsim-visitor-tab__field-value--closed'
+    default:
+      return ''
   }
 })
 
@@ -209,7 +226,8 @@ function formatTime(ts: number): string {
   margin-bottom: var(--sp-3);
 }
 .ccsim-visitor-tab__avatar-fallback {
-  width: 44px; height: 44px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-full);
   background: var(--cl-accent);
   display: flex;

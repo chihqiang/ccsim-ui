@@ -32,11 +32,13 @@ function isSafeIcon(icon: string): boolean {
 }
 
 const sortedItems = computed(() => {
-  return [...props.items].sort((a, b) => (a.order ?? DEFAULT_TOOLBAR_ORDER) - (b.order ?? DEFAULT_TOOLBAR_ORDER))
+  return [...props.items].sort(
+    (a, b) => (a.order ?? DEFAULT_TOOLBAR_ORDER) - (b.order ?? DEFAULT_TOOLBAR_ORDER),
+  )
 })
 
 const visibleItems = computed(() => {
-  return sortedItems.value.filter(p => !p.show || p.show(props.context))
+  return sortedItems.value.filter((p) => !p.show || p.show(props.context))
 })
 
 function isActive(item: ToolbarItem): boolean {

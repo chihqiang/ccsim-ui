@@ -9,10 +9,12 @@ const DANGEROUS_PATTERNS = [
 ]
 
 export function validateMessage(content: string): { valid: boolean; error?: string } {
-  if (!content || typeof content !== 'string') return { valid: false, error: t('send.validationEmpty') }
+  if (!content || typeof content !== 'string')
+    return { valid: false, error: t('send.validationEmpty') }
   const trimmed = content.trim()
   if (trimmed.length === 0) return { valid: false, error: t('send.validationEmpty') }
-  if (trimmed.length > MESSAGE_MAX_LENGTH) return { valid: false, error: t('send.validationTooLong', { max: MESSAGE_MAX_LENGTH }) }
+  if (trimmed.length > MESSAGE_MAX_LENGTH)
+    return { valid: false, error: t('send.validationTooLong', { max: MESSAGE_MAX_LENGTH }) }
   return { valid: true }
 }
 

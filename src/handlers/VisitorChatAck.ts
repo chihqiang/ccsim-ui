@@ -7,6 +7,13 @@ export class VisitorChatAckHandler implements MessageHandler<ChatAck> {
   readonly type = 'chat_ack'
   handle(msg: ChatAck, ctx: HandlerContext): void {
     cancelOptimisticTimer(ctx.sendState, msg.temp_id)
-    ctx.pipeline.resolveByAck(msg.temp_id, msg.msg_id, msg.session_id, msg.seq_num, msg.created_at, store.messages)
+    ctx.pipeline.resolveByAck(
+      msg.temp_id,
+      msg.msg_id,
+      msg.session_id,
+      msg.seq_num,
+      msg.created_at,
+      store.messages,
+    )
   }
 }

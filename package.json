@@ -44,12 +44,14 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "run-s typecheck build"
+    "format": "prettier --write src/",
+    "prepublishOnly": "run-s format typecheck  build"
   },
   "devDependencies": {
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-vue": "^5.2.0",
     "npm-run-all2": "^8.0.4",
+    "prettier": "^3.9.5",
     "typescript": "^5.9.3",
     "uuid": "^14.0.1",
     "vant": "^4.9.24",

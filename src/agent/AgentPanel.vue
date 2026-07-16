@@ -18,27 +18,65 @@
       <div v-if="!store.isAgentOnline" class="ccsim-panel__offline">
         <div class="ccsim-panel__offline-card">
           <svg class="ccsim-panel__offline-icon" viewBox="0 0 80 80" fill="none">
-            <rect x="8" y="12" width="64" height="48" rx="8" stroke="currentColor" stroke-width="2" />
-            <path d="M24 36h32M24 44h20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            <path d="M40 60v8l-8-6h-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <rect
+              x="8"
+              y="12"
+              width="64"
+              height="48"
+              rx="8"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+            <path
+              d="M24 36h32M24 44h20"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+            <path
+              d="M40 60v8l-8-6h-8"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
             <circle cx="56" cy="28" r="4" fill="currentColor" opacity="0.3" />
           </svg>
           <h3>{{ $t('panel.agent.offlineTitle') }}</h3>
           <p>{{ $t('panel.agent.offlineDesc') }}</p>
-          <button
-            class="ccsim-panel__online-btn"
-            :disabled="isLoggingIn"
-            @click="handleLogin"
-          >
-            <svg v-if="isLoggingIn" class="ccsim-panel__btn-spinner" viewBox="0 0 24 24" fill="none">
+          <button class="ccsim-panel__online-btn" :disabled="isLoggingIn" @click="handleLogin">
+            <svg
+              v-if="isLoggingIn"
+              class="ccsim-panel__btn-spinner"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.3" />
-              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+              <path
+                d="M12 2a10 10 0 0 1 10 10"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
             </svg>
-            <span>{{ isLoggingIn ? $t('panel.agent.loggingIn') : $t('panel.agent.onlineBtn') }}</span>
+            <span>{{
+              isLoggingIn ? $t('panel.agent.loggingIn') : $t('panel.agent.onlineBtn')
+            }}</span>
           </button>
           <p v-if="loginError" class="ccsim-panel__error">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             {{ loginError }}
           </p>
@@ -71,11 +109,20 @@
                 </div>
                 <div>
                   <div class="ccsim-panel__chat-visitor-name">{{ currentVisitorName }}</div>
-                  <div v-if="currentVisitorSource" class="ccsim-panel__chat-visitor-source">{{ currentVisitorSource }}</div>
+                  <div v-if="currentVisitorSource" class="ccsim-panel__chat-visitor-source">
+                    {{ currentVisitorSource }}
+                  </div>
                 </div>
               </div>
               <button class="ccsim-panel__close-session" @click="handleCloseSession">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <circle cx="12" cy="12" r="10" />
                   <line x1="15" y1="9" x2="9" y2="15" />
                   <line x1="9" y1="9" x2="15" y2="15" />
@@ -95,13 +142,30 @@
               @preview-image="previewUrl = $event"
               @load-more="loadMoreHistory"
             />
-            <ImagePreview :visible="!!previewUrl" :url="previewUrl || ''" @close="previewUrl = null" />
+            <ImagePreview
+              :visible="!!previewUrl"
+              :url="previewUrl || ''"
+              @close="previewUrl = null"
+            />
 
             <!-- No session selected -->
             <div v-if="!store.currentSessionId" class="ccsim-panel__no-session">
               <svg class="ccsim-panel__no-session-icon" viewBox="0 0 80 80" fill="none">
-                <rect x="8" y="12" width="64" height="48" rx="8" stroke="currentColor" stroke-width="2" />
-                <path d="M24 36h32M24 44h20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <rect
+                  x="8"
+                  y="12"
+                  width="64"
+                  height="48"
+                  rx="8"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <path
+                  d="M24 36h32M24 44h20"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
                 <circle cx="56" cy="28" r="4" fill="currentColor" opacity="0.3" />
               </svg>
               <p>{{ $t('panel.agent.noSession') }}</p>
@@ -167,7 +231,9 @@ onMounted(() => document.addEventListener('keydown', onKeydown))
 onUnmounted(() => document.removeEventListener('keydown', onKeydown))
 
 const currentMessages = computed(() => store.messagesMap[store.currentSessionId ?? -1] ?? [])
-const currentHistoryLoading = computed(() => store.historyLoading[store.currentSessionId ?? -1] ?? false)
+const currentHistoryLoading = computed(
+  () => store.historyLoading[store.currentSessionId ?? -1] ?? false,
+)
 
 const toolbarContext = computed<ToolbarContext>(() => ({
   sessionId: store.currentSessionId,
@@ -179,18 +245,22 @@ const toolbarContext = computed<ToolbarContext>(() => ({
 const currentVisitorName = computed(() => {
   const id = store.currentSessionId
   if (id == null) return ''
-  const session = store.sessions.find((s: any) => s.sessionId === id) as Record<string, any> | undefined
+  const session = store.sessions.find((s: any) => s.sessionId === id) as
+    Record<string, any> | undefined
   if (session) return session.visitorNickname || $t('format.unknownUser')
-  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as Record<string, any> | undefined
+  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as
+    Record<string, any> | undefined
   return waiting?.visitor_nickname || $t('format.unknownUser')
 })
 
 const currentVisitorAvatar = computed(() => {
   const id = store.currentSessionId
   if (id == null) return null
-  const session = store.sessions.find((s: any) => s.sessionId === id) as Record<string, any> | undefined
+  const session = store.sessions.find((s: any) => s.sessionId === id) as
+    Record<string, any> | undefined
   if (session?.visitorAvatar) return session.visitorAvatar
-  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as Record<string, any> | undefined
+  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as
+    Record<string, any> | undefined
   if (waiting?.visitorAvatar) return waiting.visitorAvatar
   if (waiting?.visitor_avatar) return waiting.visitor_avatar
   return null
@@ -199,9 +269,11 @@ const currentVisitorAvatar = computed(() => {
 const currentVisitorSource = computed(() => {
   const id = store.currentSessionId
   if (id == null) return ''
-  const session = store.sessions.find((s: any) => s.sessionId === id) as Record<string, any> | undefined
+  const session = store.sessions.find((s: any) => s.sessionId === id) as
+    Record<string, any> | undefined
   if (session?.source) return session.source
-  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as Record<string, any> | undefined
+  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as
+    Record<string, any> | undefined
   return waiting?.source || ''
 })
 
@@ -211,11 +283,20 @@ function handleCloseSession() {
 }
 
 const panelStyle = computed(() => {
-  if (isFullscreen.value) return { position: 'fixed' as const, inset: '0', width: '100%', height: '100%', borderRadius: '0' }
+  if (isFullscreen.value)
+    return {
+      position: 'fixed' as const,
+      inset: '0',
+      width: '100%',
+      height: '100%',
+      borderRadius: '0',
+    }
   return {}
 })
 
-function handleSend(text: string) { sdk?.sendChat(text) }
+function handleSend(text: string) {
+  sdk?.sendChat(text)
+}
 
 function loadMoreHistory() {
   const id = store.currentSessionId
@@ -275,7 +356,8 @@ function loadMoreHistory() {
   gap: var(--sp-2);
 }
 .ccsim-panel__chat-avatar-fallback {
-  width: 28px; height: 28px;
+  width: 28px;
+  height: 28px;
   border-radius: var(--radius-full);
   background: var(--cl-accent);
   display: flex;
@@ -310,7 +392,11 @@ function loadMoreHistory() {
   cursor: pointer;
   transition: all var(--transition-fast);
 }
-.ccsim-panel__close-session svg { width: 14px; height: 14px; color: var(--cl-danger); }
+.ccsim-panel__close-session svg {
+  width: 14px;
+  height: 14px;
+  color: var(--cl-danger);
+}
 .ccsim-panel__close-session:hover {
   background: var(--cl-danger-bg);
   border-color: var(--cl-danger);

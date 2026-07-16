@@ -9,7 +9,8 @@ export default {
       online: ' online',
       offline: 'No agents online',
       noticeOnline: 'We usually respond within a few minutes',
-      noticeOffline: 'No agents online. Your message will be answered when an agent becomes available',
+      noticeOffline:
+        'No agents online. Your message will be answered when an agent becomes available',
       emptyTitle: 'No messages',
       emptyDesc: 'Type a message to start chatting',
       placeholder: 'Type your question...',

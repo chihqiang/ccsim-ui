@@ -10,7 +10,10 @@ export function registerSeenMsgId(msgId: number) {
     for (let i = 0; i < EVICT_BATCH; i++) {
       const pos = (seenMsgRingPos + i) % MAX_SEEN_MSG_IDS
       const old = seenMsgRingBuf[pos]
-      if (old !== undefined) { seenMsgIds.delete(old); seenMsgRingBuf[pos] = undefined }
+      if (old !== undefined) {
+        seenMsgIds.delete(old)
+        seenMsgRingBuf[pos] = undefined
+      }
     }
     seenMsgRingPos = (seenMsgRingPos + EVICT_BATCH) % MAX_SEEN_MSG_IDS
     seenMsgCount -= EVICT_BATCH
@@ -23,7 +26,9 @@ export function registerSeenMsgId(msgId: number) {
   seenMsgCount++
 }
 
-export function isMsgIdSeen(msgId: number): boolean { return seenMsgIds.has(msgId) }
+export function isMsgIdSeen(msgId: number): boolean {
+  return seenMsgIds.has(msgId)
+}
 export function clearSeenMsgIds() {
   seenMsgIds.clear()
   seenMsgRingBuf.fill(undefined)

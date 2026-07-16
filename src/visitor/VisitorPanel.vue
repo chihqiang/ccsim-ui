@@ -5,21 +5,37 @@
       <header class="ccsim-panel__header">
         <div class="ccsim-panel__header-bg" />
         <button class="ccsim-panel__close" @click="sdk?.hidePanel()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
         <div class="ccsim-panel__header-content">
           <div class="ccsim-panel__header-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </div>
           <div>
             <h2 class="ccsim-panel__title">{{ $t('panel.visitor.title') }}</h2>
             <p class="ccsim-panel__subtitle">
-              <span v-if="store.agentOnlineCount > 0">{{ store.agentOnlineCount }} {{ $t('panel.visitor.online') }}</span>
+              <span v-if="store.agentOnlineCount > 0"
+                >{{ store.agentOnlineCount }} {{ $t('panel.visitor.online') }}</span
+              >
               <span v-else>{{ $t('panel.visitor.offline') }}</span>
             </p>
           </div>
@@ -28,14 +44,29 @@
 
       <!-- Connection status -->
       <ConnectionStatus
-        v-if="store.status === 'connecting' || store.status === 'disconnected' || store.status === 'error'"
+        v-if="
+          store.status === 'connecting' ||
+          store.status === 'disconnected' ||
+          store.status === 'error'
+        "
         :type="connectionStatusType"
       />
 
       <!-- Offline notice -->
       <div v-if="store.status === 'connected' && !store.hasOnlineAgent" class="ccsim-panel__notice">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
         <span>{{ $t('panel.visitor.noticeOffline') }}</span>
       </div>
@@ -61,17 +92,10 @@
       </template>
 
       <!-- Input toolbar -->
-      <Toolbar
-        v-if="store.sessionId"
-        :items="store.toolbarItems"
-        :context="toolbarContext"
-      />
+      <Toolbar v-if="store.sessionId" :items="store.toolbarItems" :context="toolbarContext" />
 
       <!-- Input -->
-      <MessageInput
-        :placeholder="$t('panel.visitor.placeholder')"
-        @send="handleSend"
-      />
+      <MessageInput :placeholder="$t('panel.visitor.placeholder')" @send="handleSend" />
     </div>
   </Transition>
 </template>
@@ -92,12 +116,14 @@ import { Role } from '@/types/sdk'
 const sdk = getInstance()
 const previewUrl = ref<string | null>(null)
 
-const connectionStatusType = computed<'connecting' | 'disconnected' | 'error' | 'reconnecting'>(() => {
-  if (store.status === 'connecting') return 'connecting'
-  if (store.status === 'disconnected') return 'disconnected'
-  if (store.status === 'error') return 'error'
-  return 'reconnecting'
-})
+const connectionStatusType = computed<'connecting' | 'disconnected' | 'error' | 'reconnecting'>(
+  () => {
+    if (store.status === 'connecting') return 'connecting'
+    if (store.status === 'disconnected') return 'disconnected'
+    if (store.status === 'error') return 'error'
+    return 'reconnecting'
+  },
+)
 
 const toolbarContext = computed<ToolbarContext>(() => ({
   sessionId: store.sessionId,
@@ -111,10 +137,12 @@ const panelSectionContext = computed<PanelSectionContext>(() => ({
 }))
 
 const visibleSections = computed(() => {
-  return store.panelSections.filter(s => !s.show || s.show(panelSectionContext.value))
+  return store.panelSections.filter((s) => !s.show || s.show(panelSectionContext.value))
 })
 
-function handleSend(text: string) { sdk?.sendChat(text) }
+function handleSend(text: string) {
+  sdk?.sendChat(text)
+}
 
 function loadMoreHistory() {
   if (!sdk || !store.sessionId || store.historyLoading || !store.messages.length) return
@@ -157,7 +185,7 @@ function loadMoreHistory() {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 20% 80%, rgba(255,255,255,0.15) 0%, transparent 60%);
+  background: radial-gradient(ellipse at 20% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
 }
 .ccsim-panel__close {
   position: absolute;
@@ -168,7 +196,7 @@ function loadMoreHistory() {
   height: 28px;
   border-radius: var(--radius-full);
   border: none;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -177,8 +205,13 @@ function loadMoreHistory() {
   transition: background var(--transition-fast);
   padding: 0;
 }
-.ccsim-panel__close svg { width: 14px; height: 14px; }
-.ccsim-panel__close:hover { background: rgba(255,255,255,0.25); }
+.ccsim-panel__close svg {
+  width: 14px;
+  height: 14px;
+}
+.ccsim-panel__close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
 
 .ccsim-panel__header-content {
   position: relative;
@@ -191,14 +224,17 @@ function loadMoreHistory() {
   width: 40px;
   height: 40px;
   border-radius: var(--radius-full);
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   backdrop-filter: blur(4px);
 }
-.ccsim-panel__header-avatar svg { width: 20px; height: 20px; }
+.ccsim-panel__header-avatar svg {
+  width: 20px;
+  height: 20px;
+}
 
 .ccsim-panel__title {
   margin: 0;
@@ -210,7 +246,7 @@ function loadMoreHistory() {
 .ccsim-panel__subtitle {
   margin: 0;
   font-size: var(--font-size-sm);
-  color: rgba(255,255,255,0.75);
+  color: rgba(255, 255, 255, 0.75);
   line-height: 1.4;
 }
 

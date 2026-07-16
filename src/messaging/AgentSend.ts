@@ -10,7 +10,9 @@ import { t } from '@/i18n'
 import { v4 as uuidv4 } from 'uuid'
 import type { MessagePipeline } from './agentPipeline'
 import {
-  createSendState, clearAllTimers, cancelOptimisticTimer,
+  createSendState,
+  clearAllTimers,
+  cancelOptimisticTimer,
   type SendState,
 } from '@/messaging/coreSend'
 
@@ -32,16 +34,42 @@ export interface SendChatContext {
 
 const MIN_SEND_INTERVAL = 500
 const BASE_OPTIMISTIC_ITEM: ChatMessageItem = {
-  msgId: 0, tempId: '', sessionId: 0, senderRole: SenderTypeEnum.AGENT, senderId: 0,
-  nickname: '', content: '', msgType: 'text', seqNum: 0, createdAt: 0,
-  isRead: false, status: MessageStatusEnum.PENDING,
+  msgId: 0,
+  tempId: '',
+  sessionId: 0,
+  senderRole: SenderTypeEnum.AGENT,
+  senderId: 0,
+  nickname: '',
+  content: '',
+  msgType: 'text',
+  seqNum: 0,
+  createdAt: 0,
+  isRead: false,
+  status: MessageStatusEnum.PENDING,
 }
 
 function createOptimisticItem(
-  tempId: string, sessionId: number, senderRole: SenderTypeEnum, senderId: number,
-  nickname: string, content: string, msgType: MsgType, isRead: boolean,
+  tempId: string,
+  sessionId: number,
+  senderRole: SenderTypeEnum,
+  senderId: number,
+  nickname: string,
+  content: string,
+  msgType: MsgType,
+  isRead: boolean,
 ): ChatMessageItem {
-  return { ...BASE_OPTIMISTIC_ITEM, tempId, sessionId, senderRole, senderId, nickname, content, msgType, createdAt: Date.now(), isRead }
+  return {
+    ...BASE_OPTIMISTIC_ITEM,
+    tempId,
+    sessionId,
+    senderRole,
+    senderId,
+    nickname,
+    content,
+    msgType,
+    createdAt: Date.now(),
+    isRead,
+  }
 }
 
 function onOptimisticTimeout(ctx: SendChatContext, state: SendState, tempId: string) {
@@ -66,17 +94,29 @@ function checkRateLimit(state: SendState): boolean {
 export function sendChat(ctx: SendChatContext, content: string, msgType: MsgType = 'text') {
   const trimmed = content.trim()
   const validation = validateMessage(trimmed)
-  if (!validation.valid) { ctx.emit('messageError', validation.error!); return }
+  if (!validation.valid) {
+    ctx.emit('messageError', validation.error!)
+    return
+  }
 
   const state = ctx.sendState
   if (!state) return
-  if (!checkRateLimit(state)) { ctx.emit('messageError', t('send.agentTooFrequent')); return }
-  if (!ctx.connected) { ctx.emit('messageError', t('send.agentDisconnected')); return }
+  if (!checkRateLimit(state)) {
+    ctx.emit('messageError', t('send.agentTooFrequent'))
+    return
+  }
+  if (!ctx.connected) {
+    ctx.emit('messageError', t('send.agentDisconnected'))
+    return
+  }
 
   const sanitized = sanitizeMessage(trimmed)
   const tempId = uuidv4()
   const sid = ctx.currentSessionId
-  if (!sid) { ctx.emit('messageError', t('send.agentNoSession')); return }
+  if (!sid) {
+    ctx.emit('messageError', t('send.agentNoSession'))
+    return
+  }
 
   ctx.send({
     type: ClientMessageTypeEnum.CHAT_SEND,
@@ -88,9 +128,14 @@ export function sendChat(ctx: SendChatContext, content: string, msgType: MsgType
   state.lastSendTime = Date.now()
 
   const item = createOptimisticItem(
-    tempId, sid, SenderTypeEnum.AGENT,
-    ctx.agentId ?? 0, ctx.agentName ?? `客服${ctx.agentId ?? ''}`,
-    sanitized, msgType, true,
+    tempId,
+    sid,
+    SenderTypeEnum.AGENT,
+    ctx.agentId ?? 0,
+    ctx.agentName ?? `客服${ctx.agentId ?? ''}`,
+    sanitized,
+    msgType,
+    true,
   )
   ctx.optimisticMessages.push(item)
   ctx.pipeline.queue.push(item)

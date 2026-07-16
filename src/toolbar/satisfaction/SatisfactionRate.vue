@@ -9,19 +9,43 @@
           :class="['ccsim-satisfaction__btn', `ccsim-satisfaction__btn--${opt.value}`]"
           @click="rate(opt.value)"
         >
-          <svg v-if="opt.value === 1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            v-if="opt.value === 1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <circle cx="12" cy="12" r="10" />
             <path d="M8 14s1.5 2 4 2 4-2 4-2" />
             <line x1="9" y1="9" x2="9.01" y2="9" />
             <line x1="15" y1="9" x2="15.01" y2="9" />
           </svg>
-          <svg v-else-if="opt.value === 2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            v-else-if="opt.value === 2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <circle cx="12" cy="12" r="10" />
             <line x1="8" y1="15" x2="16" y2="15" />
             <line x1="9" y1="9" x2="9.01" y2="9" />
             <line x1="15" y1="9" x2="15.01" y2="9" />
           </svg>
-          <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            v-else
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <circle cx="12" cy="12" r="10" />
             <path d="M16 16s-1.5-2-4-2-4 2-4 2" />
             <line x1="9" y1="9" x2="9.01" y2="9" />
@@ -30,10 +54,21 @@
           <span>{{ opt.label }}</span>
         </button>
       </div>
-      <button class="ccsim-satisfaction__dismiss" @click="dismiss">{{ $t('satisfaction.later') }}</button>
+      <button class="ccsim-satisfaction__dismiss" @click="dismiss">
+        {{ $t('satisfaction.later') }}
+      </button>
     </div>
     <div v-else class="ccsim-satisfaction__rated">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <polyline points="20 6 9 17 4 12" />
       </svg>
       <span>{{ $t('satisfaction.thanks') }}</span>
@@ -54,7 +89,10 @@ const rated = ref(false)
 let hideTimer: ReturnType<typeof setTimeout> | null = null
 
 onUnmounted(() => {
-  if (hideTimer) { clearTimeout(hideTimer); hideTimer = null }
+  if (hideTimer) {
+    clearTimeout(hideTimer)
+    hideTimer = null
+  }
 })
 
 const options = computed(() => {
@@ -70,10 +108,15 @@ function rate(val: number) {
   const sid = satisfactionState.rateCardSessionId ?? store.sessionId
   if (sid && sdk) sdk.rateSession(sid, val)
   rated.value = true
-  hideTimer = setTimeout(() => { hideRate(); hideTimer = null }, 2000)
+  hideTimer = setTimeout(() => {
+    hideRate()
+    hideTimer = null
+  }, 2000)
 }
 
-function dismiss() { hideRate() }
+function dismiss() {
+  hideRate()
+}
 </script>
 
 <style scoped>
@@ -117,22 +160,31 @@ function dismiss() { hideRate() }
   color: var(--cl-text-secondary);
   min-width: 64px;
 }
-.ccsim-satisfaction__btn svg { width: 22px; height: 22px; }
+.ccsim-satisfaction__btn svg {
+  width: 22px;
+  height: 22px;
+}
 .ccsim-satisfaction__btn:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
-.ccsim-satisfaction__btn--1 { color: var(--cl-success); }
+.ccsim-satisfaction__btn--1 {
+  color: var(--cl-success);
+}
 .ccsim-satisfaction__btn--1:hover {
   border-color: var(--cl-success);
   background: var(--cl-success-bg);
 }
-.ccsim-satisfaction__btn--2 { color: var(--cl-warning); }
+.ccsim-satisfaction__btn--2 {
+  color: var(--cl-warning);
+}
 .ccsim-satisfaction__btn--2:hover {
   border-color: var(--cl-warning);
   background: var(--cl-warning-bg);
 }
-.ccsim-satisfaction__btn--3 { color: var(--cl-danger); }
+.ccsim-satisfaction__btn--3 {
+  color: var(--cl-danger);
+}
 .ccsim-satisfaction__btn--3:hover {
   border-color: var(--cl-danger);
   background: var(--cl-danger-bg);
@@ -146,7 +198,9 @@ function dismiss() { hideRate() }
   padding: var(--sp-1) var(--sp-2);
   transition: color var(--transition-fast);
 }
-.ccsim-satisfaction__dismiss:hover { color: var(--cl-text-secondary); }
+.ccsim-satisfaction__dismiss:hover {
+  color: var(--cl-text-secondary);
+}
 .ccsim-satisfaction__rated {
   display: flex;
   align-items: center;

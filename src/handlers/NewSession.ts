@@ -16,7 +16,7 @@ export class NewSessionHandler implements MessageHandler<NewSession> {
 
   handle(msg: NewSession, ctx: HandlerContext): void {
     // 去重：检查 session_id 是否已存在于 waitingSessions
-    const exists = store.waitingSessions.some(w => w.session_id === msg.session_id)
+    const exists = store.waitingSessions.some((w) => w.session_id === msg.session_id)
     if (exists) {
       logger.debug('NewSession: duplicate session_id', msg.session_id, 'skipped')
       return

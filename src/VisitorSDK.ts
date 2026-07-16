@@ -20,7 +20,9 @@ import SatisfactionRate from '@/toolbar/satisfaction/satisfactionRate.vue'
 type EventCallback<K extends SdkEventName> = SdkEvents[K]
 
 let instance: VisitorSDK | null = null
-export function getInstance(): VisitorSDK | null { return instance }
+export function getInstance(): VisitorSDK | null {
+  return instance
+}
 export { SDK_VERSION } from '@/utils/version'
 
 export class VisitorSDK extends BaseSDK {
@@ -30,7 +32,10 @@ export class VisitorSDK extends BaseSDK {
 
   constructor(options: VisitorInitOptions) {
     super()
-    if (instance) { logger.warn('SDK 已初始化，返回已有实例'); return instance }
+    if (instance) {
+      logger.warn('SDK 已初始化，返回已有实例')
+      return instance
+    }
     instance = this
     this.init(options as unknown as Record<string, unknown>)
     this._registerDefaults()
@@ -43,7 +48,7 @@ export class VisitorSDK extends BaseSDK {
       label: '评价',
       order: 100,
       active: () => satisfactionState.showRateCard,
-      onClick: (ctx) => ctx.active ? hideRate() : showRate(store.sessionId),
+      onClick: (ctx) => (ctx.active ? hideRate() : showRate(store.sessionId)),
       show: (ctx) => ctx.sessionId != null,
       panel: {
         component: SatisfactionRate,
@@ -52,17 +57,37 @@ export class VisitorSDK extends BaseSDK {
     })
   }
 
-  protected get logTag() { return 'visitor' }
-  get connected() { return this.ws?.connected ?? false }
-  protected get store() { return store }
-  protected get pipelineQueue() { return this.pipeline.queue }
-  protected mountUI() { mountApp() }
-  protected unmountUI() { unmountApp() }
+  protected get logTag() {
+    return 'visitor'
+  }
+  get connected() {
+    return this.ws?.connected ?? false
+  }
+  protected get store() {
+    return store
+  }
+  protected get pipelineQueue() {
+    return this.pipeline.queue
+  }
+  protected mountUI() {
+    mountApp()
+  }
+  protected unmountUI() {
+    unmountApp()
+  }
 
-  get sessionId() { return store.sessionId }
-  get visitorId() { return store.visitorId }
-  get messages() { return store.messages }
-  get visitorOptions() { return this.options as unknown as VisitorInitOptions }
+  get sessionId() {
+    return store.sessionId
+  }
+  get visitorId() {
+    return store.visitorId
+  }
+  get messages() {
+    return store.messages
+  }
+  get visitorOptions() {
+    return this.options as unknown as VisitorInitOptions
+  }
 
   protected processOptions(opts: Record<string, unknown>): Record<string, unknown> {
     if (!opts.platform) throw new CcsimError('E001', t('errors.platformRequired'))
@@ -87,22 +112,38 @@ export class VisitorSDK extends BaseSDK {
 
   on<K extends SdkEventName>(event: K, cb: EventCallback<K>): this
   on(event: string, cb: (...args: unknown[]) => void): this
-  on(event: string, cb: (...args: unknown[]) => void): this { return super.on(event, cb) }
+  on(event: string, cb: (...args: unknown[]) => void): this {
+    return super.on(event, cb)
+  }
 
   off<K extends SdkEventName>(event: K, cb: EventCallback<K>): this
   off(event: string, cb: (...args: unknown[]) => void): this
-  off(event: string, cb: (...args: unknown[]) => void): this { return super.off(event, cb) }
+  off(event: string, cb: (...args: unknown[]) => void): this {
+    return super.off(event, cb)
+  }
 
-  sendChat(content: string, msgType: MsgType = 'text') { sendChat(this as unknown as SendChatContext, content, msgType) }
+  sendChat(content: string, msgType: MsgType = 'text') {
+    sendChat(this as unknown as SendChatContext, content, msgType)
+  }
 
   requestSessionHistory(sessionId: number, beforeSeq?: number, limit?: number) {
     if (this.ws?.connected) {
-      this.send({ type: ClientMessageTypeEnum.SESSION_HISTORY, session_id: sessionId, before_seq: beforeSeq ?? 0, limit: limit ?? 20 })
-    } else { logger.warn('WebSocket 未连接') }
+      this.send({
+        type: ClientMessageTypeEnum.SESSION_HISTORY,
+        session_id: sessionId,
+        before_seq: beforeSeq ?? 0,
+        limit: limit ?? 20,
+      })
+    } else {
+      logger.warn('WebSocket 未连接')
+    }
   }
 
   closeSession(sessionId: number) {
-    if (!this.ws?.connected) { logger.warn('WebSocket 未连接'); return }
+    if (!this.ws?.connected) {
+      logger.warn('WebSocket 未连接')
+      return
+    }
     this.send({ type: ClientMessageTypeEnum.SESSION_CLOSE, session_id: sessionId })
   }
 
@@ -126,11 +167,24 @@ export class VisitorSDK extends BaseSDK {
 
   sendMessageRead(sessionId: number, msgId: number, seqNum: number) {
     if (!this.ws?.connected) return
-    this.send({ type: ClientMessageTypeEnum.MESSAGE_READ, session_id: sessionId, msg_id: msgId, seq_num: seqNum })
+    this.send({
+      type: ClientMessageTypeEnum.MESSAGE_READ,
+      session_id: sessionId,
+      msg_id: msgId,
+      seq_num: seqNum,
+    })
   }
 
-  updateVisitorInfo(info: { nickname?: string; phone?: string; avatar?: string; metadata?: string }) {
-    if (!this.ws?.connected) { logger.warn('WebSocket 未连接'); return }
+  updateVisitorInfo(info: {
+    nickname?: string
+    phone?: string
+    avatar?: string
+    metadata?: string
+  }) {
+    if (!this.ws?.connected) {
+      logger.warn('WebSocket 未连接')
+      return
+    }
     const ALLOWED = new Set(['nickname', 'phone', 'avatar', 'metadata'])
     const filtered: Record<string, unknown> = { type: ClientMessageTypeEnum.USER_UPDATE }
     for (const key of ALLOWED) {
@@ -161,7 +215,7 @@ export class VisitorSDK extends BaseSDK {
   }
 
   registerToolbar(item: ToolbarItem) {
-    const exists = store.toolbarItems.some(p => p.key === item.key)
+    const exists = store.toolbarItems.some((p) => p.key === item.key)
     if (exists) {
       logger.warn(`Toolbar "${item.key}" already registered, skipping`)
       return
@@ -172,10 +226,11 @@ export class VisitorSDK extends BaseSDK {
 
     // 自动注册关联的 panel section
     if (item.panel) {
-      const resolveComponent = typeof item.panel.component === 'function' && item.panel.component.length === 0
-        ? (item.panel.component as () => Promise<import('vue').Component>)()
-        : Promise.resolve(item.panel.component as import('vue').Component)
-      resolveComponent.then(component => {
+      const resolveComponent =
+        typeof item.panel.component === 'function' && item.panel.component.length === 0
+          ? (item.panel.component as () => Promise<import('vue').Component>)()
+          : Promise.resolve(item.panel.component as import('vue').Component)
+      resolveComponent.then((component) => {
         this.registerPanelSection({
           key: item.key,
           component,
@@ -187,7 +242,7 @@ export class VisitorSDK extends BaseSDK {
   }
 
   unregisterToolbar(key: string) {
-    const idx = store.toolbarItems.findIndex(p => p.key === key)
+    const idx = store.toolbarItems.findIndex((p) => p.key === key)
     if (idx === -1) return
     store.toolbarItems.splice(idx, 1)
     this.unregisterPanelSection(key)
@@ -195,7 +250,7 @@ export class VisitorSDK extends BaseSDK {
   }
 
   registerPanelSection(section: PanelSection) {
-    const exists = store.panelSections.some(s => s.key === section.key)
+    const exists = store.panelSections.some((s) => s.key === section.key)
     if (exists) {
       logger.warn(`PanelSection "${section.key}" already registered, skipping`)
       return
@@ -206,7 +261,7 @@ export class VisitorSDK extends BaseSDK {
   }
 
   unregisterPanelSection(key: string) {
-    const idx = store.panelSections.findIndex(s => s.key === key)
+    const idx = store.panelSections.findIndex((s) => s.key === key)
     if (idx === -1) return
     store.panelSections.splice(idx, 1)
     logger.debug(`PanelSection "${key}" unregistered`)

@@ -6,10 +6,28 @@
     @click="$emit('click')"
   >
     <div class="ccsim-widget__btn">
-      <svg v-if="!isAgent" class="ccsim-widget__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        v-if="!isAgent"
+        class="ccsim-widget__icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
-      <svg v-else class="ccsim-widget__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        v-else
+        class="ccsim-widget__icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
         <circle cx="9" cy="7" r="4" />
         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -52,14 +70,18 @@ defineEmits<{
   height: var(--widget-size);
   border-radius: var(--radius-full);
   background: var(--cl-primary);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.15s ease;
 }
-.ccsim-widget__btn:hover { transform: scale(1.08); }
-.ccsim-widget__btn:active { transform: scale(0.94); }
+.ccsim-widget__btn:hover {
+  transform: scale(1.08);
+}
+.ccsim-widget__btn:active {
+  transform: scale(0.94);
+}
 
 .ccsim-widget__icon {
   width: 24px;
@@ -85,8 +107,18 @@ defineEmits<{
   border-radius: 999px;
 }
 
-.ccsim-badge-pop-enter-active { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-.ccsim-badge-pop-leave-active { transition: all 0.12s ease; }
-.ccsim-badge-pop-enter-from { opacity: 0; transform: scale(0.3); }
-.ccsim-badge-pop-leave-to { opacity: 0; transform: scale(0.3); }
+.ccsim-badge-pop-enter-active {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ccsim-badge-pop-leave-active {
+  transition: all 0.12s ease;
+}
+.ccsim-badge-pop-enter-from {
+  opacity: 0;
+  transform: scale(0.3);
+}
+.ccsim-badge-pop-leave-to {
+  opacity: 0;
+  transform: scale(0.3);
+}
 </style>

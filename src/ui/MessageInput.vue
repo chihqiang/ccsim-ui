@@ -19,7 +19,14 @@
         :disabled="!text.trim()"
         @click="send"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <line x1="22" y1="2" x2="11" y2="13" />
           <polygon points="22 2 15 22 11 13 2 9 22 2" />
         </svg>
@@ -40,13 +47,20 @@ const isComposing = ref(false)
 const pendingEnter = ref(false)
 
 function onEnter(e: KeyboardEvent) {
-  if (isComposing.value) { pendingEnter.value = true; return }
+  if (isComposing.value) {
+    pendingEnter.value = true
+    return
+  }
   if (e.shiftKey) return
-  e.preventDefault(); send()
+  e.preventDefault()
+  send()
 }
 function onCompositionEnd() {
   isComposing.value = false
-  if (pendingEnter.value) { pendingEnter.value = false; send() }
+  if (pendingEnter.value) {
+    pendingEnter.value = false
+    send()
+  }
 }
 function send() {
   const trimmed = text.value.trim()
@@ -86,7 +100,9 @@ function send() {
   background: var(--cl-bg-page);
   border-radius: var(--radius-lg);
   border: 1.5px solid var(--cl-border);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
   padding: 7px 12px;
 }
 .ccsim-input__field-wrap:focus-within {

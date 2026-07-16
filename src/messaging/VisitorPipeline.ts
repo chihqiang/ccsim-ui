@@ -24,14 +24,20 @@ export class MessagePipeline {
   queue = new OptimisticQueue()
 
   resolveByAck(
-    tempId: string, msgId: number, sessionId: number,
-    seqNum: number, createdAt: number, messages: ChatMessageItem[],
+    tempId: string,
+    msgId: number,
+    sessionId: number,
+    seqNum: number,
+    createdAt: number,
+    messages: ChatMessageItem[],
   ): boolean {
     const idx = findIndexByTempId(messages, tempId)
     if (idx !== -1) {
       const item = messages[idx]
-      item.msgId = msgId; item.sessionId = sessionId
-      item.seqNum = seqNum; item.createdAt = createdAt
+      item.msgId = msgId
+      item.sessionId = sessionId
+      item.seqNum = seqNum
+      item.createdAt = createdAt
       item.status = MessageStatusEnum.DELIVERED
     }
     this.queue.removeByTempId(tempId)
@@ -39,13 +45,20 @@ export class MessagePipeline {
   }
 
   resolveByPush(
-    msgId: number, sessionId: number, seqNum: number, createdAt: number,
-    messages: ChatMessageItem[], content?: string, senderId?: number,
+    msgId: number,
+    sessionId: number,
+    seqNum: number,
+    createdAt: number,
+    messages: ChatMessageItem[],
+    content?: string,
+    senderId?: number,
   ): ChatMessageItem | undefined {
     const pvi = findIndexByMsgIdPending(messages, msgId)
     if (pvi !== -1) {
       const item = messages[pvi]
-      item.msgId = msgId; item.seqNum = seqNum; item.createdAt = createdAt
+      item.msgId = msgId
+      item.seqNum = seqNum
+      item.createdAt = createdAt
       item.status = MessageStatusEnum.DELIVERED
       this.queue.removeByTempId(item.tempId)
       return item
@@ -54,7 +67,9 @@ export class MessagePipeline {
       const cvi = findIndexByPendingContent(messages, sessionId, senderId, content)
       if (cvi !== -1) {
         const item = messages[cvi]
-        item.msgId = msgId; item.seqNum = seqNum; item.createdAt = createdAt
+        item.msgId = msgId
+        item.seqNum = seqNum
+        item.createdAt = createdAt
         item.status = MessageStatusEnum.DELIVERED
         this.queue.removeByTempId(item.tempId)
         return item

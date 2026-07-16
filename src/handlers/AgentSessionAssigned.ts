@@ -24,10 +24,14 @@ export class AgentSessionAssignedHandler implements MessageHandler<SessionAssign
 
     // 其他客服接入的会话：仅从 waitingSessions 中移除，不做完整处理
     if (store.agentId != null && msg.agent_id !== store.agentId) {
-      const wIdx = store.waitingSessions.findIndex(w => w.session_id === sid)
+      const wIdx = store.waitingSessions.findIndex((w) => w.session_id === sid)
       if (wIdx !== -1) {
         store.waitingSessions.splice(wIdx, 1)
-        logger.info('SessionAssigned: session', sid, 'removed from waiting (accepted by another agent)')
+        logger.info(
+          'SessionAssigned: session',
+          sid,
+          'removed from waiting (accepted by another agent)',
+        )
       }
       return
     }
@@ -36,7 +40,7 @@ export class AgentSessionAssignedHandler implements MessageHandler<SessionAssign
     store.currentSessionId = sid
 
     // 2. 在 sessions 列表中查找并更新
-    let session = store.sessions.find(s => s.sessionId === sid)
+    let session = store.sessions.find((s) => s.sessionId === sid)
 
     if (session) {
       session.status = 'active'
@@ -44,7 +48,7 @@ export class AgentSessionAssignedHandler implements MessageHandler<SessionAssign
       session.agentNickname = msg.agent_nickname
     } else {
       // 3. 从 waitingSessions 构建新的 session 条目
-      const waiting = store.waitingSessions.find(w => w.session_id === sid)
+      const waiting = store.waitingSessions.find((w) => w.session_id === sid)
       if (waiting) {
         store.sessions.unshift({
           sessionId: sid,
@@ -77,7 +81,7 @@ export class AgentSessionAssignedHandler implements MessageHandler<SessionAssign
     }
 
     // 4. 从 waitingSessions 中移除
-    const wIdx = store.waitingSessions.findIndex(w => w.session_id === sid)
+    const wIdx = store.waitingSessions.findIndex((w) => w.session_id === sid)
     if (wIdx !== -1) {
       store.waitingSessions.splice(wIdx, 1)
     }

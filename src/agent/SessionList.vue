@@ -1,7 +1,16 @@
 <template>
   <div class="ccsim-sessions">
     <div class="ccsim-sessions__header">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
       <span class="ccsim-sessions__header-title">{{ $t('sessionList.title') }}</span>
@@ -26,7 +35,16 @@
 
     <div ref="listContainer" class="ccsim-sessions__body scrollbar-thin" @scroll="onScroll">
       <div v-if="!list.length" class="ccsim-sessions__empty">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          width="36"
+          height="36"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
         <p>{{ $t('sessionList.empty') }}</p>
@@ -35,7 +53,13 @@
       <div
         v-for="s in list"
         :key="s.sessionId ?? s.session_id"
-        :class="['ccsim-sessions__item', { 'ccsim-sessions__item--active': (s.sessionId ?? s.session_id) === store.currentSessionId }]"
+        :class="[
+          'ccsim-sessions__item',
+          {
+            'ccsim-sessions__item--active':
+              (s.sessionId ?? s.session_id) === store.currentSessionId,
+          },
+        ]"
         @click="select(s)"
       >
         <div class="ccsim-sessions__item-avatar">
@@ -54,25 +78,38 @@
 
         <div class="ccsim-sessions__item-content">
           <div class="ccsim-sessions__item-top">
-            <span class="ccsim-sessions__item-name">{{ s.visitorNickname || $t('sessionList.visitorLabel') }}</span>
+            <span class="ccsim-sessions__item-name">{{
+              s.visitorNickname || $t('sessionList.visitorLabel')
+            }}</span>
             <div class="ccsim-sessions__item-meta">
               <span v-if="s.waitingSeconds" class="ccsim-sessions__item-waiting">
                 {{ formatWaiting(s.waitingSeconds) }}
               </span>
-              <span v-else-if="s.lastMsgTime" class="ccsim-sessions__item-time">{{ formatTime(s.lastMsgTime) }}</span>
+              <span v-else-if="s.lastMsgTime" class="ccsim-sessions__item-time">{{
+                formatTime(s.lastMsgTime)
+              }}</span>
               <span v-if="s.unreadCount > 0" class="ccsim-sessions__item-unread">
                 {{ s.unreadCount > 99 ? '99+' : s.unreadCount }}
               </span>
             </div>
           </div>
           <div class="ccsim-sessions__item-bottom">
-            <span class="ccsim-sessions__item-preview">{{ s.lastMsgContent || $t('panel.visitor.emptyTitle') }}</span>
+            <span class="ccsim-sessions__item-preview">{{
+              s.lastMsgContent || $t('panel.visitor.emptyTitle')
+            }}</span>
             <van-tag v-if="s.source" plain size="medium">{{ s.source }}</van-tag>
           </div>
         </div>
 
         <button v-if="tabIndex === 0" class="ccsim-sessions__item-accept" @click.stop="select(s)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </button>
@@ -100,10 +137,12 @@ const listContainer = ref<HTMLElement>()
 const pagination = useSessionPagination()
 const isLoadingMore = ref(false)
 
-const list = computed<any[]>(() => tabIndex.value === 0 ? store.waitingSessions : store.sessions)
+const list = computed<any[]>(() => (tabIndex.value === 0 ? store.waitingSessions : store.sessions))
 const waitingCount = computed(() => store.waitingSessions.length)
 
-watch(tabIndex, () => { store.currentSessionId = null })
+watch(tabIndex, () => {
+  store.currentSessionId = null
+})
 
 function select(s: any) {
   const id = s.sessionId ?? s.session_id
@@ -210,7 +249,9 @@ function formatWaiting(seconds: number): string {
   cursor: pointer;
   transition: all var(--transition-fast);
 }
-.ccsim-sessions__tab:hover { color: var(--cl-text-secondary); }
+.ccsim-sessions__tab:hover {
+  color: var(--cl-text-secondary);
+}
 .ccsim-sessions__tab--active {
   background: var(--cl-primary-light);
   color: var(--cl-primary);
@@ -256,7 +297,9 @@ function formatWaiting(seconds: number): string {
   border-bottom: 1px solid var(--cl-border-light);
   position: relative;
 }
-.ccsim-sessions__item:hover { background: var(--cl-bg-hover); }
+.ccsim-sessions__item:hover {
+  background: var(--cl-bg-hover);
+}
 .ccsim-sessions__item--active {
   background: var(--cl-primary-light);
 }
@@ -270,9 +313,12 @@ function formatWaiting(seconds: number): string {
   background: var(--cl-primary);
   border-radius: 0 2px 2px 0;
 }
-.ccsim-sessions__item-avatar { flex-shrink: 0; }
+.ccsim-sessions__item-avatar {
+  flex-shrink: 0;
+}
 .ccsim-sessions__avatar-text {
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
@@ -365,7 +411,10 @@ function formatWaiting(seconds: number): string {
   box-shadow: var(--shadow-btn);
   padding: 0;
 }
-.ccsim-sessions__item-accept svg { width: 14px; height: 14px; }
+.ccsim-sessions__item-accept svg {
+  width: 14px;
+  height: 14px;
+}
 .ccsim-sessions__item-accept:hover {
   transform: scale(1.1);
   box-shadow: var(--shadow-btn-hover);

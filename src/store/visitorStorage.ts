@@ -16,7 +16,11 @@ function isLocalStorageAvailable(): boolean {
 }
 
 function safeSet(key: string, value: string): void {
-  try { localStorage.setItem(key, value) } catch { logger.warn('visitorStorage: localStorage write failed', key) }
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    logger.warn('visitorStorage: localStorage write failed', key)
+  }
 }
 
 export function resolveVisitorUUID(userProvided?: string): string {
@@ -29,18 +33,34 @@ export function resolveVisitorUUID(userProvided?: string): string {
     try {
       const stored = sessionStorage.getItem(KEY_VISITOR_UUID)
       if (stored) return stored
-    } catch { logger.warn('visitorStorage: sessionStorage read failed') }
+    } catch {
+      logger.warn('visitorStorage: sessionStorage read failed')
+    }
   }
 
   if (userProvided) {
-    if (storageAvailable) { safeSet(KEY_VISITOR_UUID, userProvided) }
-    else { try { sessionStorage.setItem(KEY_VISITOR_UUID, userProvided) } catch { logger.warn('visitorStorage: sessionStorage write failed') } }
+    if (storageAvailable) {
+      safeSet(KEY_VISITOR_UUID, userProvided)
+    } else {
+      try {
+        sessionStorage.setItem(KEY_VISITOR_UUID, userProvided)
+      } catch {
+        logger.warn('visitorStorage: sessionStorage write failed')
+      }
+    }
     return userProvided
   }
 
   const generated = uuidv4()
-  if (storageAvailable) { safeSet(KEY_VISITOR_UUID, generated) }
-  else { try { sessionStorage.setItem(KEY_VISITOR_UUID, generated) } catch { logger.warn('visitorStorage: sessionStorage write failed') } }
+  if (storageAvailable) {
+    safeSet(KEY_VISITOR_UUID, generated)
+  } else {
+    try {
+      sessionStorage.setItem(KEY_VISITOR_UUID, generated)
+    } catch {
+      logger.warn('visitorStorage: sessionStorage write failed')
+    }
+  }
   return generated
 }
 
@@ -55,10 +75,16 @@ export function loadSessionId(): number | null {
       const id = parseInt(stored, 10)
       return isNaN(id) ? null : id
     }
-  } catch { logger.warn('visitorStorage: load sessionId failed') }
+  } catch {
+    logger.warn('visitorStorage: load sessionId failed')
+  }
   return null
 }
 
 export function clearSessionId(): void {
-  try { localStorage.removeItem(KEY_SESSION_ID) } catch { logger.warn('visitorStorage: clear sessionId failed') }
+  try {
+    localStorage.removeItem(KEY_SESSION_ID)
+  } catch {
+    logger.warn('visitorStorage: clear sessionId failed')
+  }
 }

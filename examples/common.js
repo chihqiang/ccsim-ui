@@ -13,7 +13,7 @@ window.ExampleUtils = {
     ExampleUtils.testTotalEl = document.getElementById('testTotal')
 
     ExampleUtils.tests = {}
-    config.testIds.forEach(id => {
+    config.testIds.forEach((id) => {
       ExampleUtils.tests[id] = { el: document.getElementById(id), passed: false }
     })
     ExampleUtils.updateSummary()
@@ -31,10 +31,13 @@ window.ExampleUtils = {
   },
 
   updateSummary() {
-    let pass = 0, fail = 0, total = 0
+    let pass = 0,
+      fail = 0,
+      total = 0
     for (const key of Object.keys(ExampleUtils.tests)) {
       total++
-      if (ExampleUtils.tests[key].passed) pass++; else fail++
+      if (ExampleUtils.tests[key].passed) pass++
+      else fail++
     }
     ExampleUtils.testPassEl.textContent = pass
     ExampleUtils.testFailEl.textContent = fail
@@ -52,5 +55,5 @@ window.ExampleUtils = {
   updateConnInfo(key, val) {
     const el = document.getElementById(key)
     if (el) el.textContent = String(val ?? '-')
-  }
+  },
 }

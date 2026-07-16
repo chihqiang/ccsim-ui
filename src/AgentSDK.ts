@@ -19,7 +19,9 @@ import VisitorInfoTab from '@/tabs/VisitorInfo/visitorInfoTab.vue'
 type EventCallback<K extends SdkEventName> = SdkEvents[K]
 
 let instance: AgentSDK | null = null
-export function getInstance(): AgentSDK | null { return instance }
+export function getInstance(): AgentSDK | null {
+  return instance
+}
 export { SDK_VERSION } from '@/utils/version'
 
 export class AgentSDK extends BaseSDK {
@@ -35,9 +37,16 @@ export class AgentSDK extends BaseSDK {
 
   constructor(options: AgentInitOptions) {
     super()
-    if (instance) { logger.warn('SDK 已初始化，返回已有实例'); return instance }
+    if (instance) {
+      logger.warn('SDK 已初始化，返回已有实例')
+      return instance
+    }
     instance = this
-    try { this.agentShouldBeOnline = localStorage.getItem(AgentSDK.STORAGE_KEY) === '1' } catch { /* noop */ }
+    try {
+      this.agentShouldBeOnline = localStorage.getItem(AgentSDK.STORAGE_KEY) === '1'
+    } catch {
+      /* noop */
+    }
     this.init(options as unknown as Record<string, unknown>)
     this._registerDefaults()
   }
@@ -51,20 +60,46 @@ export class AgentSDK extends BaseSDK {
     })
   }
 
-  protected get logTag() { return 'agent' }
-  get connected() { return this.ws?.connected ?? false }
-  protected get store() { return store }
-  protected get pipelineQueue() { return this.pipeline.queue }
-  protected mountUI() { mountApp() }
-  protected unmountUI() { unmountApp() }
+  protected get logTag() {
+    return 'agent'
+  }
+  get connected() {
+    return this.ws?.connected ?? false
+  }
+  protected get store() {
+    return store
+  }
+  protected get pipelineQueue() {
+    return this.pipeline.queue
+  }
+  protected mountUI() {
+    mountApp()
+  }
+  protected unmountUI() {
+    unmountApp()
+  }
 
-  get currentSessionId() { return store.currentSessionId }
-  get agentName() { return store.agentName }
-  get agentId() { return store.agentId }
-  get messages() { return store.messagesMap[store.currentSessionId ?? 0] || [] }
-  get optimisticMessages() { return store.optimisticMessages }
-  get agentOptions() { return this.options as unknown as AgentInitOptions }
-  get shouldAutoOnline() { return this.agentShouldBeOnline }
+  get currentSessionId() {
+    return store.currentSessionId
+  }
+  get agentName() {
+    return store.agentName
+  }
+  get agentId() {
+    return store.agentId
+  }
+  get messages() {
+    return store.messagesMap[store.currentSessionId ?? 0] || []
+  }
+  get optimisticMessages() {
+    return store.optimisticMessages
+  }
+  get agentOptions() {
+    return this.options as unknown as AgentInitOptions
+  }
+  get shouldAutoOnline() {
+    return this.agentShouldBeOnline
+  }
 
   protected processOptions(opts: Record<string, unknown>): Record<string, unknown> {
     if (!opts.account) throw new CcsimError('E001', t('errors.accountRequired'))
@@ -85,16 +120,23 @@ export class AgentSDK extends BaseSDK {
 
   protected onSdkClose() {
     this._clearActiveTimer()
-    if (store.isAgentOnline) { store.isAgentOnline = false; this.agentOnlineSent = false }
+    if (store.isAgentOnline) {
+      store.isAgentOnline = false
+      this.agentOnlineSent = false
+    }
   }
 
   on<K extends SdkEventName>(event: K, cb: EventCallback<K>): this
   on(event: string, cb: (...args: unknown[]) => void): this
-  on(event: string, cb: (...args: unknown[]) => void): this { return super.on(event, cb) }
+  on(event: string, cb: (...args: unknown[]) => void): this {
+    return super.on(event, cb)
+  }
 
   off<K extends SdkEventName>(event: K, cb: EventCallback<K>): this
   off(event: string, cb: (...args: unknown[]) => void): this
-  off(event: string, cb: (...args: unknown[]) => void): this { return super.off(event, cb) }
+  off(event: string, cb: (...args: unknown[]) => void): this {
+    return super.off(event, cb)
+  }
 
   sendChat(content: string, msgType: MsgType = 'text') {
     sendChat(this as unknown as SendChatContext, content, msgType)
@@ -103,13 +145,23 @@ export class AgentSDK extends BaseSDK {
 
   requestSessionList(page = 1, limit = 50, status?: string) {
     if (this.ws?.connected) {
-      this.send({ type: ClientMessageTypeEnum.SESSION_LIST, page, limit, ...(status ? { status } : {}) })
+      this.send({
+        type: ClientMessageTypeEnum.SESSION_LIST,
+        page,
+        limit,
+        ...(status ? { status } : {}),
+      })
     }
   }
 
   requestSessionHistory(sessionId: number, beforeSeq?: number, limit?: number) {
     if (this.ws?.connected) {
-      this.send({ type: ClientMessageTypeEnum.SESSION_HISTORY, session_id: sessionId, before_seq: beforeSeq ?? 0, limit: limit ?? 20 })
+      this.send({
+        type: ClientMessageTypeEnum.SESSION_HISTORY,
+        session_id: sessionId,
+        before_seq: beforeSeq ?? 0,
+        limit: limit ?? 20,
+      })
     }
   }
 
@@ -119,17 +171,25 @@ export class AgentSDK extends BaseSDK {
     }
   }
 
-  resetAgentOnlineSent() { this.agentOnlineSent = false }
+  resetAgentOnlineSent() {
+    this.agentOnlineSent = false
+  }
 
   acceptSession(sessionId: number) {
     if (store.agentId == null || !store.isAgentOnline || !this.ws?.connected) return
-    if (sessionId == null || sessionId <= 0) { logger.warn('acceptSession: invalid sessionId', sessionId); return }
+    if (sessionId == null || sessionId <= 0) {
+      logger.warn('acceptSession: invalid sessionId', sessionId)
+      return
+    }
     this.send({ type: ClientMessageTypeEnum.SESSION_ACCEPT, session_id: sessionId })
     this._resetActiveTimer()
   }
 
   closeSession(sessionId: number) {
-    if (!this.ws?.connected) { logger.warn('WebSocket 未连接'); return }
+    if (!this.ws?.connected) {
+      logger.warn('WebSocket 未连接')
+      return
+    }
     this.send({ type: ClientMessageTypeEnum.SESSION_CLOSE, session_id: sessionId })
     this._resetActiveTimer()
   }
@@ -139,7 +199,11 @@ export class AgentSDK extends BaseSDK {
     this.send({ type: ClientMessageTypeEnum.AGENT_ONLINE })
     this.agentOnlineSent = true
     this.agentShouldBeOnline = true
-    try { localStorage.setItem(AgentSDK.STORAGE_KEY, '1') } catch { /* noop */ }
+    try {
+      localStorage.setItem(AgentSDK.STORAGE_KEY, '1')
+    } catch {
+      /* noop */
+    }
     this._startActiveTimer()
   }
 
@@ -149,7 +213,11 @@ export class AgentSDK extends BaseSDK {
     store.isAgentOnline = false
     this.agentOnlineSent = false
     this.agentShouldBeOnline = false
-    try { localStorage.removeItem(AgentSDK.STORAGE_KEY) } catch { /* noop */ }
+    try {
+      localStorage.removeItem(AgentSDK.STORAGE_KEY)
+    } catch {
+      /* noop */
+    }
     this._clearActiveTimer()
   }
 
@@ -159,11 +227,14 @@ export class AgentSDK extends BaseSDK {
     const timeout = this.agentOptions.activeTimeout
     if (!timeout || timeout <= 0) return
     this._clearActiveTimer()
-    this.activeTimer = setTimeout(() => {
-      logger.warn(`客服超过 ${timeout} 分钟未操作，自动下线`)
-      this.setAgentOffline()
-      this.emit('activeTimeout')
-    }, timeout * 60 * 1000)
+    this.activeTimer = setTimeout(
+      () => {
+        logger.warn(`客服超过 ${timeout} 分钟未操作，自动下线`)
+        this.setAgentOffline()
+        this.emit('activeTimeout')
+      },
+      timeout * 60 * 1000,
+    )
   }
 
   private _startActiveTimer() {
@@ -185,7 +256,12 @@ export class AgentSDK extends BaseSDK {
 
   sendMessageRead(sessionId: number, msgId: number, seqNum: number) {
     if (!this.ws?.connected) return
-    this.send({ type: ClientMessageTypeEnum.MESSAGE_READ, session_id: sessionId, msg_id: msgId, seq_num: seqNum })
+    this.send({
+      type: ClientMessageTypeEnum.MESSAGE_READ,
+      session_id: sessionId,
+      msg_id: msgId,
+      seq_num: seqNum,
+    })
     this._resetActiveTimer()
   }
 
@@ -202,7 +278,7 @@ export class AgentSDK extends BaseSDK {
   }
 
   registerRightPanelTab(tab: RightPanelTab) {
-    const exists = store.rightPanelTabs.some(t => t.key === tab.key)
+    const exists = store.rightPanelTabs.some((t) => t.key === tab.key)
     if (exists) {
       logger.warn(`RightPanelTab "${tab.key}" already registered, skipping`)
       return
@@ -214,7 +290,7 @@ export class AgentSDK extends BaseSDK {
   }
 
   unregisterRightPanelTab(key: string) {
-    const idx = store.rightPanelTabs.findIndex(t => t.key === key)
+    const idx = store.rightPanelTabs.findIndex((t) => t.key === key)
     if (idx === -1) return
     store.rightPanelTabs.splice(idx, 1)
     if (store.activeRightPanelTab === key) {
@@ -224,7 +300,7 @@ export class AgentSDK extends BaseSDK {
   }
 
   registerToolbar(item: ToolbarItem) {
-    const exists = store.toolbarItems.some(p => p.key === item.key)
+    const exists = store.toolbarItems.some((p) => p.key === item.key)
     if (exists) {
       logger.warn(`Toolbar "${item.key}" already registered, skipping`)
       return
@@ -235,7 +311,7 @@ export class AgentSDK extends BaseSDK {
   }
 
   unregisterToolbar(key: string) {
-    const idx = store.toolbarItems.findIndex(p => p.key === key)
+    const idx = store.toolbarItems.findIndex((p) => p.key === key)
     if (idx === -1) return
     store.toolbarItems.splice(idx, 1)
     logger.debug(`Toolbar "${key}" unregistered`)

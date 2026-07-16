@@ -4,7 +4,7 @@
       'ccsim-msg',
       `ccsim-msg--${align}`,
       `ccsim-msg--${msg.msgType || 'text'}`,
-      { 'ccsim-msg--failed': msg.status === 'FAILED' }
+      { 'ccsim-msg--failed': msg.status === 'FAILED' },
     ]"
   >
     <!-- System message -->
@@ -32,12 +32,16 @@
 
         <div class="ccsim-msg__content">
           <!-- Nickname (left) -->
-          <div v-if="align === 'left'" class="ccsim-msg__nick">{{ msg.nickname || $t('chat.visitor') }}</div>
+          <div v-if="align === 'left'" class="ccsim-msg__nick">
+            {{ msg.nickname || $t('chat.visitor') }}
+          </div>
 
           <!-- Bubble row -->
           <div class="ccsim-msg__row">
             <div class="ccsim-msg__bubble">
-              <span v-if="msg.msgType === 'text' || !msg.msgType" class="ccsim-msg__text">{{ msg.content }}</span>
+              <span v-if="msg.msgType === 'text' || !msg.msgType" class="ccsim-msg__text">{{
+                msg.content
+              }}</span>
               <img
                 v-else-if="msg.msgType === 'image'"
                 :src="msg.content"
@@ -50,17 +54,34 @@
 
             <!-- Meta (time + status) -->
             <div class="ccsim-msg__meta">
-              <span v-if="msg.status === 'PENDING'" class="ccsim-msg__status ccsim-msg__status--pending">
+              <span
+                v-if="msg.status === 'PENDING'"
+                class="ccsim-msg__status ccsim-msg__status--pending"
+              >
                 <span class="ccsim-msg__spinner" />
               </span>
-              <span v-else-if="msg.status === 'FAILED'" class="ccsim-msg__status ccsim-msg__status--failed">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <span
+                v-else-if="msg.status === 'FAILED'"
+                class="ccsim-msg__status ccsim-msg__status--failed"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <circle cx="12" cy="12" r="10" />
                   <line x1="15" y1="9" x2="9" y2="15" />
                   <line x1="9" y1="9" x2="15" y2="15" />
                 </svg>
               </span>
-              <span v-if="showTime && msg.status !== 'PENDING'" class="ccsim-msg__time">{{ formatTime(msg.createdAt) }}</span>
+              <span v-if="showTime && msg.status !== 'PENDING'" class="ccsim-msg__time">{{
+                formatTime(msg.createdAt)
+              }}</span>
             </div>
           </div>
         </div>

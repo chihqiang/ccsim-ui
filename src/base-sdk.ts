@@ -36,24 +36,44 @@ export abstract class BaseSDK {
   protected abstract get logTag(): string
   protected abstract get store(): SdkStore
   protected abstract get pipelineQueue(): { clear(): void }
-  protected abstract get sendState(): { tempIdToTimer: Map<string, ReturnType<typeof setTimeout>>; lastSendTime: number }
+  protected abstract get sendState(): {
+    tempIdToTimer: Map<string, ReturnType<typeof setTimeout>>
+    lastSendTime: number
+  }
   protected abstract buildAuthMsg(): Record<string, unknown>
   protected abstract mountUI(): void
   protected abstract unmountUI(): void
   protected abstract onSdkOpen(): void
   protected abstract onSdkClose(): void
 
-  get logger() { return logger }
+  get logger() {
+    return logger
+  }
 
-  on(event: string, cb: (...args: unknown[]) => void): this { this.bus.on(event, cb); return this }
-  off(event: string, cb: (...args: unknown[]) => void): this { this.bus.off(event, cb); return this }
-  emit(event: string, ...args: unknown[]) { this.bus.emitArray(event, args) }
-  send(msg: Record<string, unknown>) { this.ws?.send(msg) }
-  getStore() { return this.store }
+  on(event: string, cb: (...args: unknown[]) => void): this {
+    this.bus.on(event, cb)
+    return this
+  }
+  off(event: string, cb: (...args: unknown[]) => void): this {
+    this.bus.off(event, cb)
+    return this
+  }
+  emit(event: string, ...args: unknown[]) {
+    this.bus.emitArray(event, args)
+  }
+  send(msg: Record<string, unknown>) {
+    this.ws?.send(msg)
+  }
+  getStore() {
+    return this.store
+  }
 
   /** 认证成功时调用，清除认证超时定时器 */
   resolveAuth(): void {
-    if (this.authTimer) { clearTimeout(this.authTimer); this.authTimer = null }
+    if (this.authTimer) {
+      clearTimeout(this.authTimer)
+      this.authTimer = null
+    }
   }
 
   /** 记录心跳 ACK 时间戳，供 WsClient 检测连接假死 */
@@ -83,7 +103,9 @@ export abstract class BaseSDK {
     this.connect()
   }
 
-  protected processOptions(opts: Record<string, unknown>): Record<string, unknown> { return opts }
+  protected processOptions(opts: Record<string, unknown>): Record<string, unknown> {
+    return opts
+  }
 
   private setupLogging(rawOptions: Record<string, unknown>) {
     if (rawOptions.tenant_no == null) throw new CcsimError('E001', t('errors.tenantRequired'))
@@ -122,8 +144,10 @@ export abstract class BaseSDK {
     }
 
     this.ws = new WsClient(urlProvider)
-    this.ws.onMessage(msg => this.handleServerMsg(msg))
-    this.ws.onParseError((rawData) => this.emit('error', new CcsimError('E002', t('errors.parseFailed'), { raw: rawData })))
+    this.ws.onMessage((msg) => this.handleServerMsg(msg))
+    this.ws.onParseError((rawData) =>
+      this.emit('error', new CcsimError('E002', t('errors.parseFailed'), { raw: rawData })),
+    )
     this.ws.onReconnecting((a, m) => this.emit('reconnecting', a, m))
     this.ws.onOpen(() => {
       logger.info(`[${this.logTag}] WebSocket 连接成功`)
@@ -139,7 +163,10 @@ export abstract class BaseSDK {
       this.onSdkOpen()
     })
     this.ws.onClose((code, reason) => {
-      if (this.authTimer) { clearTimeout(this.authTimer); this.authTimer = null }
+      if (this.authTimer) {
+        clearTimeout(this.authTimer)
+        this.authTimer = null
+      }
       const st = this.store.status
       if (st === 'connecting' || st === 'connected' || st === 'error') {
         this.store.status = 'disconnected'
@@ -152,7 +179,10 @@ export abstract class BaseSDK {
     this.ws.onError((event) => {
       logger.error(`[${this.logTag}] WebSocket 错误:`, event)
       this.store.status = 'error'
-      this.emit('error', new CcsimError('E001', t('errors.connectionFailed'), { raw: String(event.type || event) }))
+      this.emit(
+        'error',
+        new CcsimError('E001', t('errors.connectionFailed'), { raw: String(event.type || event) }),
+      )
     })
     this.ws.connect()
   }
@@ -160,16 +190,29 @@ export abstract class BaseSDK {
   protected handleServerMsg(msg: ServerMessage) {
     if (msg.type === 'auth_ok') this.resolveAuth()
     const handler = this.handlers.get(msg.type)
-    if (!handler) { logger.warn(`[${this.logTag}] 未处理的消息类型: ${msg.type}`); return }
-    try { handler.handle(msg, this) }
-    catch (error) {
+    if (!handler) {
+      logger.warn(`[${this.logTag}] 未处理的消息类型: ${msg.type}`)
+      return
+    }
+    try {
+      handler.handle(msg, this)
+    } catch (error) {
       const ccsimErr = toCcsimError(error, 'E003')
       logger.error(`[${this.logTag}] 处理消息 ${msg.type} 异常:`, ccsimErr.toJSON())
-      this.emit('error', new CcsimError(ccsimErr.code, t('errors.handleException', { type: msg.type, error: ccsimErr.message }), { raw: ccsimErr.details }))
+      this.emit(
+        'error',
+        new CcsimError(
+          ccsimErr.code,
+          t('errors.handleException', { type: msg.type, error: ccsimErr.message }),
+          { raw: ccsimErr.details },
+        ),
+      )
     }
   }
 
   protected ensureMounted() {
-    if (!document.getElementById('ccsim-sdk-root')) { this.mountUI() }
+    if (!document.getElementById('ccsim-sdk-root')) {
+      this.mountUI()
+    }
   }
 }

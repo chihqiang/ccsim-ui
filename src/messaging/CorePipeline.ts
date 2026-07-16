@@ -30,7 +30,12 @@ export function findIndexByPendingContent(
 ): number {
   for (let i = 0; i < arr.length; i++) {
     const m = arr[i]
-    if (m.status === MessageStatusEnum.PENDING && m.sessionId === sessionId && m.senderId === senderId && m.content === content) {
+    if (
+      m.status === MessageStatusEnum.PENDING &&
+      m.sessionId === sessionId &&
+      m.senderId === senderId &&
+      m.content === content
+    ) {
       return i
     }
   }
@@ -60,7 +65,9 @@ export function ensureSortByCreatedAt(arr: ChatMessageItem[]) {
 export class OptimisticQueue {
   private items: ChatMessageItem[] = []
 
-  push(item: ChatMessageItem) { this.items.push(item) }
+  push(item: ChatMessageItem) {
+    this.items.push(item)
+  }
 
   findByTempId(tempId: string): ChatMessageItem | undefined {
     const idx = findIndexByTempId(this.items, tempId)
@@ -80,6 +87,10 @@ export class OptimisticQueue {
     }
   }
 
-  clear() { this.items.length = 0 }
-  get length() { return this.items.length }
+  clear() {
+    this.items.length = 0
+  }
+  get length() {
+    return this.items.length
+  }
 }

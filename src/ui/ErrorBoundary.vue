@@ -3,8 +3,24 @@
     <div class="ccsim-error__card">
       <svg class="ccsim-error__icon" viewBox="0 0 80 80" fill="none">
         <circle cx="40" cy="40" r="30" stroke="currentColor" stroke-width="2" opacity="0.2" />
-        <line x1="32" y1="32" x2="48" y2="48" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
-        <line x1="48" y1="32" x2="32" y2="48" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+        <line
+          x1="32"
+          y1="32"
+          x2="48"
+          y2="48"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        />
+        <line
+          x1="48"
+          y1="32"
+          x2="32"
+          y2="48"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        />
       </svg>
       <p class="ccsim-error__title">{{ $t('errorBoundary.title') }}</p>
       <button class="ccsim-error__btn" @click="recover">{{ $t('errorBoundary.reload') }}</button>
@@ -18,8 +34,14 @@ import { ref, onErrorCaptured } from 'vue'
 import { logger } from '@/utils/logger'
 
 const errored = ref(false)
-onErrorCaptured((err) => { logger.error('errorBoundary', err); errored.value = true; return false })
-function recover() { errored.value = false }
+onErrorCaptured((err) => {
+  logger.error('errorBoundary', err)
+  errored.value = true
+  return false
+})
+function recover() {
+  errored.value = false
+}
 </script>
 
 <style scoped>

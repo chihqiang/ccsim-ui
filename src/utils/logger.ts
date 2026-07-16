@@ -22,7 +22,9 @@ export class Logger {
     this.prefix = prefix
   }
 
-  setLogLevel(level: LogLevel) { this.logLevel = level }
+  setLogLevel(level: LogLevel) {
+    this.logLevel = level
+  }
 
   debug(...args: unknown[]) {
     if (this.shouldLog(LogLevel.DEBUG)) console.debug(this.prefix, '[DEBUG]', ...args)

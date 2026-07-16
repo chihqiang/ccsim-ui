@@ -10,10 +10,17 @@ export type { VisitorInitOptions, AgentInitOptions } from '@/types'
 // Enums & constants
 export { SDKStatusEnum, Role, SenderTypeEnum } from '@/types/sdk'
 export {
-  OPTIMISTIC_TIMEOUT, HEARTBEAT_INTERVAL, MAX_RECONNECT_ATTEMPTS,
-  RECONNECT_BASE_DELAY, MAX_RECONNECT_DELAY, MESSAGE_MAX_LENGTH,
-  MAX_MESSAGES_PER_CONVERSATION, CONNECTION_TIMEOUT, AUTH_TIMEOUT,
-  LOGIN_TIMEOUT, PAGINATION_TIMEOUT,
+  OPTIMISTIC_TIMEOUT,
+  HEARTBEAT_INTERVAL,
+  MAX_RECONNECT_ATTEMPTS,
+  RECONNECT_BASE_DELAY,
+  MAX_RECONNECT_DELAY,
+  MESSAGE_MAX_LENGTH,
+  MAX_MESSAGES_PER_CONVERSATION,
+  CONNECTION_TIMEOUT,
+  AUTH_TIMEOUT,
+  LOGIN_TIMEOUT,
+  PAGINATION_TIMEOUT,
 } from '@/types/sdk'
 export { MessageStatusEnum } from '@/types/store'
 export type { SessionStatus } from '@/types/store'

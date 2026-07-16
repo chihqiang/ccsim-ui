@@ -29,13 +29,16 @@ export function useSessionPagination() {
   }
 
   // 监听 _sessionPage 变化来重置 isLoadingMore（服务端响应到达时）
-  watch(() => store._sessionPage, () => {
-    if (timeoutTimer) {
-      clearTimeout(timeoutTimer)
-      timeoutTimer = null
-    }
-    isLoadingMore.value = false
-  })
+  watch(
+    () => store._sessionPage,
+    () => {
+      if (timeoutTimer) {
+        clearTimeout(timeoutTimer)
+        timeoutTimer = null
+      }
+      isLoadingMore.value = false
+    },
+  )
 
   onUnmounted(() => {
     if (timeoutTimer) {

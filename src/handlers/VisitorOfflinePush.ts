@@ -16,8 +16,13 @@ export class VisitorOfflinePushHandler implements MessageHandler<OfflinePush> {
       if (item.msg_id > 0) registerSeenMsgId(item.msg_id)
 
       const matched = ctx.pipeline.resolveByPush(
-        item.msg_id, item.session_id, item.seq_num, item.created_at,
-        store.messages, item.content, item.sender_id,
+        item.msg_id,
+        item.session_id,
+        item.seq_num,
+        item.created_at,
+        store.messages,
+        item.content,
+        item.sender_id,
       )
       if (matched) {
         cancelOptimisticTimer(ctx.sendState, matched.tempId)

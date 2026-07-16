@@ -23,13 +23,13 @@ export class AgentSessionClosedHandler implements MessageHandler<SessionClosed> 
     logger.info('SessionClosed: session', sid, 'closed, reason:', msg.close_reason)
 
     // 1. 从 sessions 列表中移除
-    const idx = store.sessions.findIndex(s => s.sessionId === sid)
+    const idx = store.sessions.findIndex((s) => s.sessionId === sid)
     if (idx !== -1) {
       store.sessions.splice(idx, 1)
     }
 
     // 同时从 waitingSessions 中移除（可能尚未被接入就被关闭）
-    const wIdx = store.waitingSessions.findIndex(w => w.session_id === sid)
+    const wIdx = store.waitingSessions.findIndex((w) => w.session_id === sid)
     if (wIdx !== -1) {
       store.waitingSessions.splice(wIdx, 1)
     }

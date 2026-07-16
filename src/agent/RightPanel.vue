@@ -5,7 +5,10 @@
       <button
         v-for="tab in tabs"
         :key="tab.key"
-        :class="['ccsim-right-panel__tab', store.activeRightPanelTab === tab.key ? 'ccsim-right-panel__tab--active' : '']"
+        :class="[
+          'ccsim-right-panel__tab',
+          store.activeRightPanelTab === tab.key ? 'ccsim-right-panel__tab--active' : '',
+        ]"
         @click="store.activeRightPanelTab = tab.key"
       >
         {{ tab.label }}
@@ -14,7 +17,16 @@
 
     <!-- Header: single tab mode -->
     <div v-else class="ccsim-right-panel__header">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-line-linecap="round" stroke-line-linejoin="round">
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-line-linecap="round"
+        stroke-line-linejoin="round"
+      >
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
         <circle cx="12" cy="7" r="4" />
       </svg>
@@ -23,11 +35,7 @@
 
     <!-- Tab content -->
     <div class="ccsim-right-panel__body scrollbar-thin">
-      <component
-        v-if="activeTab"
-        :is="activeTab.component"
-        :key="activeTab.key"
-      />
+      <component v-if="activeTab" :is="activeTab.component" :key="activeTab.key" />
     </div>
   </div>
 </template>
@@ -38,26 +46,32 @@ import { store } from '@/store/agent'
 import { DEFAULT_TAB_ORDER } from '@/types/right-panel'
 
 const tabs = computed(() => {
-  return [...store.rightPanelTabs].sort((a, b) => (a.order ?? DEFAULT_TAB_ORDER) - (b.order ?? DEFAULT_TAB_ORDER))
+  return [...store.rightPanelTabs].sort(
+    (a, b) => (a.order ?? DEFAULT_TAB_ORDER) - (b.order ?? DEFAULT_TAB_ORDER),
+  )
 })
 
 const activeTab = computed(() => {
-  return tabs.value.find(t => t.key === store.activeRightPanelTab) ?? tabs.value[0]
+  return tabs.value.find((t) => t.key === store.activeRightPanelTab) ?? tabs.value[0]
 })
 
 let prevTabKey: string | null = null
 
-watch(() => store.activeRightPanelTab, (newKey) => {
-  if (prevTabKey && prevTabKey !== newKey) {
-    const prev = tabs.value.find(t => t.key === prevTabKey)
-    prev?.onDeactivate?.()
-  }
-  if (newKey) {
-    const next = tabs.value.find(t => t.key === newKey)
-    next?.onActivate?.()
-  }
-  prevTabKey = newKey
-}, { immediate: true })
+watch(
+  () => store.activeRightPanelTab,
+  (newKey) => {
+    if (prevTabKey && prevTabKey !== newKey) {
+      const prev = tabs.value.find((t) => t.key === prevTabKey)
+      prev?.onDeactivate?.()
+    }
+    if (newKey) {
+      const next = tabs.value.find((t) => t.key === newKey)
+      next?.onActivate?.()
+    }
+    prevTabKey = newKey
+  },
+  { immediate: true },
+)
 </script>
 
 <style scoped>
@@ -99,7 +113,9 @@ watch(() => store.activeRightPanelTab, (newKey) => {
   cursor: pointer;
   white-space: nowrap;
   border-bottom: 2px solid transparent;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 .ccsim-right-panel__tab--active {
   color: var(--cl-primary);

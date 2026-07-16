@@ -45,7 +45,9 @@ function resolveOfflineOptimistic(
   const l1 = findIndexByMsgIdPending(msgs, msg_id)
   if (l1 !== -1) {
     const m = msgs[l1]
-    m.msgId = msg_id; m.seqNum = seq_num; m.createdAt = created_at
+    m.msgId = msg_id
+    m.seqNum = seq_num
+    m.createdAt = created_at
     m.status = MessageStatusEnum.DELIVERED
     if (m.tempId) cancelOptimisticTimer(ctx.sendState, m.tempId)
     return true
@@ -55,7 +57,9 @@ function resolveOfflineOptimistic(
   const l2 = findIndexByPendingContent(msgs, session_id, sender_id, content)
   if (l2 !== -1) {
     const m = msgs[l2]
-    m.msgId = msg_id; m.seqNum = seq_num; m.createdAt = created_at
+    m.msgId = msg_id
+    m.seqNum = seq_num
+    m.createdAt = created_at
     m.status = MessageStatusEnum.DELIVERED
     if (m.tempId) cancelOptimisticTimer(ctx.sendState, m.tempId)
     return true

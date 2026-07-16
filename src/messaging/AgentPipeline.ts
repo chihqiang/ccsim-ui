@@ -14,16 +14,23 @@ import type { ChatMessageItem } from '@/types/store'
 import { MessageStatusEnum } from '@/types/store'
 import { MAX_MESSAGES_PER_CONVERSATION } from '@/types/sdk'
 import {
-  OptimisticQueue, someByMsgId, ensureSortByCreatedAt,
-  findIndexByTempId, findIndexByMsgIdPending, findIndexByPendingContent,
+  OptimisticQueue,
+  someByMsgId,
+  ensureSortByCreatedAt,
+  findIndexByTempId,
+  findIndexByMsgIdPending,
+  findIndexByPendingContent,
 } from '@/messaging/corePipeline'
 
 export class MessagePipeline {
   queue = new OptimisticQueue()
 
   resolveByAck(
-    tempId: string, msgId: number, sessionId: number,
-    seqNum: number, createdAt: number,
+    tempId: string,
+    msgId: number,
+    sessionId: number,
+    seqNum: number,
+    createdAt: number,
     messages: ChatMessageItem[],
     optimisticMessages: ChatMessageItem[],
     messagesMap: Record<number, ChatMessageItem[]>,
@@ -62,11 +69,15 @@ export class MessagePipeline {
   }
 
   resolveByPush(
-    msgId: number, sessionId: number, seqNum: number, createdAt: number,
+    msgId: number,
+    sessionId: number,
+    seqNum: number,
+    createdAt: number,
     messages: ChatMessageItem[],
     optimisticMessages: ChatMessageItem[],
     messagesMap: Record<number, ChatMessageItem[]>,
-    content?: string, senderId?: number,
+    content?: string,
+    senderId?: number,
   ): ChatMessageItem | undefined {
     let item: ChatMessageItem | undefined
     let foundInOptimistic = false
@@ -75,7 +86,9 @@ export class MessagePipeline {
     const pmi = findIndexByMsgIdPending(messages, msgId)
     if (pmi !== -1) {
       item = messages[pmi]
-      item.msgId = msgId; item.seqNum = seqNum; item.createdAt = createdAt
+      item.msgId = msgId
+      item.seqNum = seqNum
+      item.createdAt = createdAt
       item.status = MessageStatusEnum.DELIVERED
       this.queue.removeByTempId(item.tempId)
     } else {
@@ -83,7 +96,9 @@ export class MessagePipeline {
       if (poi !== -1) {
         item = optimisticMessages[poi]
         foundInOptimistic = true
-        item.msgId = msgId; item.seqNum = seqNum; item.createdAt = createdAt
+        item.msgId = msgId
+        item.seqNum = seqNum
+        item.createdAt = createdAt
         item.status = MessageStatusEnum.DELIVERED
         this.queue.removeByTempId(item.tempId)
       }
@@ -94,7 +109,9 @@ export class MessagePipeline {
       const cmi = findIndexByPendingContent(messages, sessionId, senderId, content)
       if (cmi !== -1) {
         item = messages[cmi]
-        item.msgId = msgId; item.seqNum = seqNum; item.createdAt = createdAt
+        item.msgId = msgId
+        item.seqNum = seqNum
+        item.createdAt = createdAt
         item.status = MessageStatusEnum.DELIVERED
         this.queue.removeByTempId(item.tempId)
       } else {
@@ -102,7 +119,9 @@ export class MessagePipeline {
         if (coi !== -1) {
           item = optimisticMessages[coi]
           foundInOptimistic = true
-          item.msgId = msgId; item.seqNum = seqNum; item.createdAt = createdAt
+          item.msgId = msgId
+          item.seqNum = seqNum
+          item.createdAt = createdAt
           item.status = MessageStatusEnum.DELIVERED
           this.queue.removeByTempId(item.tempId)
         }
@@ -130,7 +149,10 @@ export class MessagePipeline {
 
     if (messages) {
       const mi = findIndexByTempId(messages, tempId)
-      if (mi !== -1) { messages[mi].status = MessageStatusEnum.FAILED; return }
+      if (mi !== -1) {
+        messages[mi].status = MessageStatusEnum.FAILED
+        return
+      }
     }
     const oi = findIndexByTempId(optimisticMessages, tempId)
     if (oi !== -1) optimisticMessages[oi].status = MessageStatusEnum.FAILED

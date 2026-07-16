@@ -12,9 +12,9 @@ export class AgentSessionAcceptAckHandler implements MessageHandler<SessionAccep
 
     store.currentSessionId = sid
 
-    if (store.sessions.some(s => s.sessionId === sid)) return
+    if (store.sessions.some((s) => s.sessionId === sid)) return
 
-    const waiting = store.waitingSessions.find(w => w.session_id === sid)
+    const waiting = store.waitingSessions.find((w) => w.session_id === sid)
     if (waiting) {
       store.sessions.unshift({
         sessionId: sid,
@@ -28,7 +28,7 @@ export class AgentSessionAcceptAckHandler implements MessageHandler<SessionAccep
         unreadCount: 0,
         createdAt: waiting.created_at,
       })
-      const wIdx = store.waitingSessions.findIndex(w => w.session_id === sid)
+      const wIdx = store.waitingSessions.findIndex((w) => w.session_id === sid)
       if (wIdx !== -1) store.waitingSessions.splice(wIdx, 1)
       logger.info('SessionAcceptAck: session', sid, 'accepted, moved to active')
     }
