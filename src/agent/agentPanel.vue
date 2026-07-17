@@ -15,73 +15,12 @@
       />
 
       <!-- Offline state -->
-      <div v-if="!store.isAgentOnline" class="ccsim-panel__offline">
-        <div class="ccsim-panel__offline-card">
-          <svg class="ccsim-panel__offline-icon" viewBox="0 0 80 80" fill="none">
-            <rect
-              x="8"
-              y="12"
-              width="64"
-              height="48"
-              rx="8"
-              stroke="currentColor"
-              stroke-width="2"
-            />
-            <path
-              d="M24 36h32M24 44h20"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-            <path
-              d="M40 60v8l-8-6h-8"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <circle cx="56" cy="28" r="4" fill="currentColor" opacity="0.3" />
-          </svg>
-          <h3>{{ $t('panel.agent.offlineTitle') }}</h3>
-          <p>{{ $t('panel.agent.offlineDesc') }}</p>
-          <button class="ccsim-panel__online-btn" :disabled="isLoggingIn" @click="handleLogin">
-            <svg
-              v-if="isLoggingIn"
-              class="ccsim-panel__btn-spinner"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.3" />
-              <path
-                d="M12 2a10 10 0 0 1 10 10"
-                stroke="currentColor"
-                stroke-width="3"
-                stroke-linecap="round"
-              />
-            </svg>
-            <span>{{
-              isLoggingIn ? $t('panel.agent.loggingIn') : $t('panel.agent.onlineBtn')
-            }}</span>
-          </button>
-          <p v-if="loginError" class="ccsim-panel__error">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            {{ loginError }}
-          </p>
-        </div>
-      </div>
+      <OfflineState
+        v-if="!store.isAgentOnline"
+        :is-logging-in="isLoggingIn"
+        :login-error="loginError"
+        @login="handleLogin"
+      />
 
       <!-- Online state -->
       <template v-else>
@@ -91,45 +30,20 @@
         />
 
         <div class="ccsim-panel__body">
-          <SessionList />
-
+          <div class="ccsim-panel__session" :style="{ width: sessionW + 'px' }">
+            <SessionList />
+          </div>
+          <div
+            class="ccsim-splitter ccsim-splitter--v"
+            role="separator"
+            aria-orientation="vertical"
+            tabindex="0"
+            @mousedown="startSessionSplit"
+            @keydown="onSplitterKey('session', $event)"
+          />
           <div class="ccsim-panel__chat">
             <!-- Chat header -->
-            <div v-if="store.currentSessionId" class="ccsim-panel__chat-header">
-              <div class="ccsim-panel__chat-visitor-info">
-                <van-image
-                  v-if="currentVisitorAvatar"
-                  round
-                  width="28"
-                  height="28"
-                  :src="currentVisitorAvatar"
-                />
-                <div v-else class="ccsim-panel__chat-avatar-fallback">
-                  {{ currentVisitorName.charAt(0) }}
-                </div>
-                <div>
-                  <div class="ccsim-panel__chat-visitor-name">{{ currentVisitorName }}</div>
-                  <div v-if="currentVisitorSource" class="ccsim-panel__chat-visitor-source">
-                    {{ currentVisitorSource }}
-                  </div>
-                </div>
-              </div>
-              <button class="ccsim-panel__close-session" @click="handleCloseSession">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="15" y1="9" x2="9" y2="15" />
-                  <line x1="9" y1="9" x2="15" y2="15" />
-                </svg>
-                {{ $t('visitorInfo.closeSession') }}
-              </button>
-            </div>
+            <ChatHeader v-if="store.currentSessionId" @close-session="handleCloseSession" />
 
             <ChatMessages
               :messages="currentMessages"
@@ -137,7 +51,7 @@
               :typing-visible="store.visitorTyping"
               :empty-title="$t('panel.agent.emptyTitle')"
               :empty-desc="$t('panel.agent.emptyDesc')"
-              :has-more-history="store._hasMoreHistory[store.currentSessionId ?? -1] ?? false"
+              :has-more-history="store.hasMoreHistory[store.currentSessionId ?? -1] ?? false"
               :history-loading="currentHistoryLoading"
               @preview-image="previewUrl = $event"
               @load-more="loadMoreHistory"
@@ -183,17 +97,49 @@
               @send="handleSend"
             />
           </div>
-
-          <RightPanel v-if="store.currentSessionId" />
+          <template v-if="store.currentSessionId">
+            <div
+              class="ccsim-splitter ccsim-splitter--v"
+              role="separator"
+              aria-orientation="vertical"
+              tabindex="0"
+              @mousedown="startRightSplit"
+              @keydown="onSplitterKey('right', $event)"
+            />
+            <div class="ccsim-panel__right" :style="{ width: rightW + 'px' }">
+              <RightPanel />
+            </div>
+          </template>
         </div>
       </template>
+
+      <!-- Resize handles (hidden in fullscreen) -->
+      <div
+        v-if="!isFullscreen"
+        class="ccsim-resize ccsim-resize--right"
+        @mousedown="startResize('right', $event)"
+      />
+      <div
+        v-if="!isFullscreen"
+        class="ccsim-resize ccsim-resize--bottom"
+        @mousedown="startResize('bottom', $event)"
+      />
+      <div
+        v-if="!isFullscreen"
+        class="ccsim-resize ccsim-resize--corner"
+        @mousedown="startResize('bottom-right', $event)"
+      />
+      <div
+        v-if="!isFullscreen"
+        class="ccsim-resize ccsim-resize--corner-left"
+        @mousedown="startResize('bottom-left', $event)"
+      />
     </div>
   </Transition>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Image as VanImage } from 'vant'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { store } from '@/store/agent'
 import { getInstance } from '@/agentSdk'
 import ChatMessages from '@/ui/chatMessages.vue'
@@ -204,10 +150,14 @@ import Toolbar from '@/ui/toolbar.vue'
 import type { ToolbarContext } from '@/types/toolbar'
 import { Role } from '@/types/sdk'
 import AgentHeader from './agentHeader.vue'
+import ChatHeader from './chatHeader.vue'
+import OfflineState from './offlineState.vue'
 import SessionList from './sessionList.vue'
 import RightPanel from './rightPanel.vue'
 import { useDrag } from '@/agent/useDrag'
 import { useFullscreen } from '@/agent/useFullscreen'
+import { useResize, loadPanelSize } from '@/agent/useResize'
+import { useSplitter } from '@/agent/useSplitter'
 import { useAgentLogin } from '@/agent/useAgentLogin'
 import { t as $t } from '@/i18n'
 
@@ -216,10 +166,29 @@ const panelRef = ref<HTMLElement | null>(null)
 const previewUrl = ref<string | null>(null)
 const { startDrag } = useDrag(panelRef)
 const { isFullscreen, toggleFullscreen } = useFullscreen()
+const { startResize } = useResize(panelRef)
+const hasRightPanel = computed(() => !!store.currentSessionId)
+const { sessionW, rightW, startSessionSplit, startRightSplit } = useSplitter(hasRightPanel)
+
+function onSplitterKey(which: 'session' | 'right', e: KeyboardEvent) {
+  const step = e.shiftKey ? 40 : 10
+  if (which === 'session') {
+    if (e.key === 'ArrowRight') sessionW.value = Math.min(sessionW.value + step, 400)
+    else if (e.key === 'ArrowLeft') sessionW.value = Math.max(sessionW.value - step, 160)
+    else return
+  } else {
+    if (e.key === 'ArrowLeft') rightW.value = Math.min(rightW.value + step, 400)
+    else if (e.key === 'ArrowRight') rightW.value = Math.max(rightW.value - step, 160)
+    else return
+  }
+  e.preventDefault()
+}
+
 const { isLoggingIn, loginError, onLogin: handleLogin } = useAgentLogin()
 
 function hidePanel() {
   if (!sdk) return
+  previewUrl.value = null
   sdk.hidePanel()
 }
 
@@ -229,6 +198,34 @@ function onKeydown(e: KeyboardEvent) {
 
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onUnmounted(() => document.removeEventListener('keydown', onKeydown))
+
+watch(
+  () => store.panelVisible,
+  (visible) => {
+    if (visible) {
+      nextTick(() => {
+        if (panelRef.value && !isFullscreen.value) {
+          const saved = loadPanelSize()
+          if (saved) {
+            panelRef.value.style.width = `${saved.width}px`
+            panelRef.value.style.height = `${saved.height}px`
+          }
+        }
+      })
+    }
+  },
+  { immediate: true },
+)
+
+watch(isFullscreen, (fs) => {
+  if (!fs && panelRef.value) {
+    const saved = loadPanelSize()
+    if (saved) {
+      panelRef.value.style.width = `${saved.width}px`
+      panelRef.value.style.height = `${saved.height}px`
+    }
+  }
+})
 
 const currentMessages = computed(() => store.messagesMap[store.currentSessionId ?? -1] ?? [])
 const currentHistoryLoading = computed(
@@ -242,44 +239,10 @@ const toolbarContext = computed<ToolbarContext>(() => ({
   role: Role.AGENT,
 }))
 
-const currentVisitorName = computed(() => {
-  const id = store.currentSessionId
-  if (id == null) return ''
-  const session = store.sessions.find((s: any) => s.sessionId === id) as
-    Record<string, any> | undefined
-  if (session) return session.visitorNickname || $t('format.unknownUser')
-  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as
-    Record<string, any> | undefined
-  return waiting?.visitor_nickname || $t('format.unknownUser')
-})
-
-const currentVisitorAvatar = computed(() => {
-  const id = store.currentSessionId
-  if (id == null) return null
-  const session = store.sessions.find((s: any) => s.sessionId === id) as
-    Record<string, any> | undefined
-  if (session?.visitorAvatar) return session.visitorAvatar
-  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as
-    Record<string, any> | undefined
-  if (waiting?.visitorAvatar) return waiting.visitorAvatar
-  if (waiting?.visitor_avatar) return waiting.visitor_avatar
-  return null
-})
-
-const currentVisitorSource = computed(() => {
-  const id = store.currentSessionId
-  if (id == null) return ''
-  const session = store.sessions.find((s: any) => s.sessionId === id) as
-    Record<string, any> | undefined
-  if (session?.source) return session.source
-  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as
-    Record<string, any> | undefined
-  return waiting?.source || ''
-})
-
 function handleCloseSession() {
   const id = store.currentSessionId
   if (id != null && sdk) sdk.closeSession(id)
+  previewUrl.value = null
 }
 
 const panelStyle = computed(() => {
@@ -332,6 +295,40 @@ function loadMoreHistory() {
   display: flex;
   overflow: hidden;
 }
+.ccsim-panel__session {
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.ccsim-panel__session :deep(.ccsim-sessions) {
+  width: 100%;
+}
+.ccsim-panel__right {
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.ccsim-panel__right :deep(.ccsim-right-panel) {
+  width: 100%;
+}
+
+/* Splitter handles */
+.ccsim-splitter {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 5;
+  transition: background 0.15s;
+}
+.ccsim-splitter--v {
+  width: 4px;
+  cursor: col-resize;
+  background: var(--cl-border);
+}
+.ccsim-splitter--v:hover {
+  background: rgba(99, 102, 241, 0.5);
+}
 
 /* Chat area */
 .ccsim-panel__chat {
@@ -340,67 +337,6 @@ function loadMoreHistory() {
   flex-direction: column;
   min-width: 0;
   position: relative;
-}
-.ccsim-panel__chat-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--sp-2_5) var(--sp-4);
-  border-bottom: 1px solid var(--cl-border-light);
-  background: var(--cl-bg-container);
-  flex-shrink: 0;
-}
-.ccsim-panel__chat-visitor-info {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-}
-.ccsim-panel__chat-avatar-fallback {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
-  background: var(--cl-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: #fff;
-  flex-shrink: 0;
-}
-.ccsim-panel__chat-visitor-name {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--cl-text-primary);
-  line-height: 1.3;
-}
-.ccsim-panel__chat-visitor-source {
-  font-size: var(--font-size-xs);
-  color: var(--cl-text-tertiary);
-  line-height: 1.3;
-}
-.ccsim-panel__close-session {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-1);
-  padding: 4px 10px;
-  border: 1px solid var(--cl-border);
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--cl-text-tertiary);
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-.ccsim-panel__close-session svg {
-  width: 14px;
-  height: 14px;
-  color: var(--cl-danger);
-}
-.ccsim-panel__close-session:hover {
-  background: var(--cl-danger-bg);
-  border-color: var(--cl-danger);
-  color: var(--cl-danger);
 }
 
 /* No session */
@@ -422,80 +358,77 @@ function loadMoreHistory() {
   color: var(--cl-gray-300);
 }
 
-/* Offline state */
-.ccsim-panel__offline {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--sp-10);
-  background: var(--cl-bg-page);
+/* Resize handles */
+.ccsim-resize {
+  position: absolute;
+  z-index: 10;
+  transition: background 0.15s;
 }
-.ccsim-panel__offline-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-10) var(--sp-8);
-  background: var(--cl-bg-container);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  text-align: center;
-  max-width: 320px;
+.ccsim-resize--right {
+  top: 0;
+  right: -3px;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
 }
-.ccsim-panel__offline-icon {
-  width: 56px;
-  height: 56px;
-  color: var(--cl-primary);
+.ccsim-resize--right:hover {
+  background: rgba(0, 0, 0, 0.12);
 }
-.ccsim-panel__offline-card h3 {
-  margin: 0;
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--cl-text-primary);
+.ccsim-resize--bottom {
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  cursor: row-resize;
 }
-.ccsim-panel__offline-card p {
-  margin: 0;
-  font-size: var(--font-size-base);
-  color: var(--cl-text-tertiary);
+.ccsim-resize--bottom:hover {
+  background: rgba(0, 0, 0, 0.12);
 }
-.ccsim-panel__online-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: 10px 32px;
-  border: none;
-  border-radius: var(--radius-round);
-  background: var(--cl-primary);
-  color: #fff;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-btn);
-  margin-top: var(--sp-2);
+.ccsim-resize--corner {
+  bottom: -1px;
+  right: -1px;
+  width: 18px;
+  height: 18px;
+  cursor: nwse-resize;
 }
-.ccsim-panel__online-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-btn-hover);
+.ccsim-resize--corner::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 2px 0;
+  opacity: 0;
+  transition: opacity 0.15s;
 }
-.ccsim-panel__online-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
+.ccsim-resize--corner:hover::after {
+  opacity: 1;
 }
-.ccsim-panel__btn-spinner {
-  width: 16px;
-  height: 16px;
-  animation: ccsim-spin 0.8s linear infinite;
+.ccsim-resize--corner-left {
+  bottom: -1px;
+  left: -1px;
+  width: 18px;
+  height: 18px;
+  cursor: nesw-resize;
 }
-.ccsim-panel__error {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-1);
-  color: var(--cl-danger);
-  font-size: var(--font-size-sm);
-  margin-top: var(--sp-1);
+.ccsim-resize--corner-left::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 0 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.ccsim-resize--corner-left:hover::after {
+  opacity: 1;
 }
 
 /* Panel transition */

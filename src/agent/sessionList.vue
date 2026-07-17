@@ -123,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Image as VanImage, Tag as VanTag } from 'vant'
 import { store } from '@/store/agent'
@@ -140,8 +140,27 @@ const isLoadingMore = ref(false)
 const list = computed<any[]>(() => (tabIndex.value === 0 ? store.waitingSessions : store.sessions))
 const waitingCount = computed(() => store.waitingSessions.length)
 
-watch(tabIndex, () => {
-  store.currentSessionId = null
+let tickTimer: ReturnType<typeof setInterval> | null = null
+onMounted(() => {
+  tickTimer = setInterval(() => {
+    for (const s of store.waitingSessions as any[]) {
+      if (s.waiting_seconds > 0) s.waiting_seconds++
+    }
+  }, 1000)
+})
+onUnmounted(() => {
+  if (tickTimer) clearInterval(tickTimer)
+})
+
+watch(tabIndex, (tab) => {
+  const currentId = store.currentSessionId
+  if (currentId == null) return
+  const getId = (s: any) => s.sessionId ?? s.session_id
+  const inPending = store.waitingSessions.some((s) => getId(s) === currentId)
+  const inActive = store.sessions.some((s) => getId(s) === currentId)
+  if ((tab === 0 && !inPending) || (tab === 1 && !inActive)) {
+    store.currentSessionId = null
+  }
 })
 
 function select(s: any) {
@@ -164,7 +183,7 @@ function select(s: any) {
 function onScroll() {
   const el = listContainer.value
   if (!el) return
-  if (el.scrollHeight - el.scrollTop - el.clientHeight < 100) {
+  if (el.scrollHeight - el.scrollTop - el.clientHeight < 200) {
     pagination.onLoadMore()
   }
 }

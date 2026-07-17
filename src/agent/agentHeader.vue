@@ -45,7 +45,7 @@
     <div class="ccsim-agent-header__right">
       <button
         class="ccsim-agent-header__action"
-        title="最小化"
+        :title="$t('panel.agent.fullscreenTitle')"
         @click.stop="$emit('toggleFullscreen')"
       >
         <svg
@@ -79,7 +79,7 @@
       </button>
       <button
         class="ccsim-agent-header__action ccsim-agent-header__action--close"
-        title="关闭工作台"
+        :title="$t('panel.agent.closeTitle')"
         @click.stop="$emit('close')"
       >
         <svg

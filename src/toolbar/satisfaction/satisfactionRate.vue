@@ -51,7 +51,6 @@
             <line x1="9" y1="9" x2="9.01" y2="9" />
             <line x1="15" y1="9" x2="15.01" y2="9" />
           </svg>
-          <span>{{ opt.label }}</span>
         </button>
       </div>
       <button class="ccsim-satisfaction__dismiss" @click="dismiss">
@@ -77,13 +76,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref, onUnmounted } from 'vue'
 import { store } from '@/store/visitor'
 import { getInstance } from '@/visitorSdk'
 import { satisfactionState, hideRate } from './state'
 
-const { t } = useI18n()
 const sdk = getInstance()
 const rated = ref(false)
 let hideTimer: ReturnType<typeof setTimeout> | null = null
@@ -95,14 +92,7 @@ onUnmounted(() => {
   }
 })
 
-const options = computed(() => {
-  const labels = t('satisfaction.labels') as unknown as string[]
-  return [
-    { label: labels[0], value: 1 },
-    { label: labels[1], value: 2 },
-    { label: labels[2], value: 3 },
-  ]
-})
+const options = [{ value: 1 }, { value: 2 }, { value: 3 }]
 
 function rate(val: number) {
   const sid = satisfactionState.rateCardSessionId ?? store.sessionId

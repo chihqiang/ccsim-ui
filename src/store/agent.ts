@@ -3,8 +3,8 @@ import type { ChatMessageItem, SessionListItem } from '@/types/store'
 import { SDKStatusEnum } from '@/types/sdk'
 import { clearSeenMsgIds } from '@/utils/dedup'
 import type { WaitingSessionListItem } from '@/types/serverMessage'
-import type { RightPanelTab } from '@/types/rightPanel'
-import { DEFAULT_TAB_KEY } from '@/types/rightPanel'
+import type { RightPanelModule } from '@/types/rightPanel'
+import { DEFAULT_MODULE_KEY } from '@/types/rightPanel'
 import type { ToolbarItem } from '@/types/toolbar'
 
 export interface AgentStoreState {
@@ -23,11 +23,12 @@ export interface AgentStoreState {
   unreadCount: number
   visitorTyping: boolean
   historyLoading: Record<number, boolean>
-  _hasMoreHistory: Record<number, boolean>
-  _hasMoreSessions: boolean
-  _sessionPage: number
-  rightPanelTabs: RightPanelTab[]
-  activeRightPanelTab: string
+  hasMoreHistory: Record<number, boolean>
+  hasMoreSessions: boolean
+  sessionPage: number
+  rightPanelModules: RightPanelModule[]
+  activeRightPanelModule: string
+  activeRightPanelDetail: string | null
   toolbarItems: ToolbarItem[]
 }
 
@@ -46,13 +47,14 @@ function createInitialState(): AgentStoreState {
     unreadCount: 0,
     visitorTyping: false,
     historyLoading: {},
-    _hasMoreHistory: {},
+    hasMoreHistory: {},
     panelVisible: false,
     widgetVisible: true,
-    _hasMoreSessions: false,
-    _sessionPage: 0,
-    rightPanelTabs: [],
-    activeRightPanelTab: DEFAULT_TAB_KEY,
+    hasMoreSessions: false,
+    sessionPage: 0,
+    rightPanelModules: [],
+    activeRightPanelModule: DEFAULT_MODULE_KEY,
+    activeRightPanelDetail: null,
     toolbarItems: [],
   }
 }

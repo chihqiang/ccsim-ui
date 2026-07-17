@@ -73,16 +73,40 @@
 
       <!-- Messages -->
       <ChatMessages
+        v-if="store.sessionId || !store.hadSession"
         :messages="store.messages"
         self-role="visitor"
         :typing-visible="store.agentTyping"
         :empty-title="$t('panel.visitor.emptyTitle')"
         :empty-desc="$t('panel.visitor.emptyDesc')"
-        :has-more-history="store._hasMoreHistory"
+        :has-more-history="store.hasMoreHistory"
         :history-loading="store.historyLoading"
         @preview-image="previewUrl = $event"
         @load-more="loadMoreHistory"
       />
+
+      <!-- Session ended -->
+      <div v-if="store.hadSession && !store.sessionId" class="ccsim-panel__ended">
+        <svg
+          width="40"
+          height="40"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          <line x1="9" y1="9" x2="15" y2="15" />
+          <line x1="15" y1="9" x2="9" y2="15" />
+        </svg>
+        <p class="ccsim-panel__ended-title">{{ $t('panel.visitor.sessionEnded') }}</p>
+        <p class="ccsim-panel__ended-desc">{{ $t('panel.visitor.sessionEndedDesc') }}</p>
+        <button class="ccsim-panel__ended-btn" @click="restartSession">
+          {{ $t('panel.visitor.restartSession') }}
+        </button>
+      </div>
 
       <ImagePreview :visible="!!previewUrl" :url="previewUrl || ''" @close="previewUrl = null" />
 
@@ -95,7 +119,11 @@
       <Toolbar v-if="store.sessionId" :items="store.toolbarItems" :context="toolbarContext" />
 
       <!-- Input -->
-      <MessageInput :placeholder="$t('panel.visitor.placeholder')" @send="handleSend" />
+      <MessageInput
+        v-if="!store.hadSession || store.sessionId"
+        :placeholder="$t('panel.visitor.placeholder')"
+        @send="handleSend"
+      />
     </div>
   </Transition>
 </template>
@@ -142,6 +170,10 @@ const visibleSections = computed(() => {
 
 function handleSend(text: string) {
   sdk?.sendChat(text)
+}
+
+function restartSession() {
+  sdk?.restart()
 }
 
 function loadMoreHistory() {
@@ -261,6 +293,50 @@ function loadMoreHistory() {
   background: var(--cl-warning-bg);
   border-bottom: 1px solid rgba(245, 158, 11, 0.15);
   flex-shrink: 0;
+}
+
+/* Session ended */
+.ccsim-panel__ended {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  padding: var(--sp-6);
+  animation: ccsim-fade-in var(--transition-normal);
+}
+.ccsim-panel__ended svg {
+  color: var(--cl-gray-300);
+}
+.ccsim-panel__ended-title {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--cl-text-secondary);
+}
+.ccsim-panel__ended-desc {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--cl-text-disabled);
+  text-align: center;
+}
+.ccsim-panel__ended-btn {
+  margin-top: var(--sp-2);
+  padding: 8px 24px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--cl-primary);
+  color: #fff;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-btn);
+}
+.ccsim-panel__ended-btn:hover {
+  background: var(--cl-primary-hover);
+  box-shadow: var(--shadow-btn-hover);
 }
 
 /* Panel transition */

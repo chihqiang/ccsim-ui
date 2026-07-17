@@ -10,99 +10,57 @@
     <div class="container">
       <h1>Ccsim 客服端 <span class="badge">npm</span></h1>
 
-      <div class="grid">
-        <div class="card">
-          <h2>连接状态 <span class="step-count" id="connStepLabel">-</span></h2>
-          <div class="stats">
-            <div class="stat">
-              <div class="num purple" id="statAgentId">-</div>
-              <div class="label">agentId</div>
-            </div>
-            <div class="stat">
-              <div class="num blue" id="statConnId">-</div>
-              <div class="label">connId</div>
-            </div>
-            <div class="stat">
-              <div class="num" id="statOnlineStatus">-</div>
-              <div class="label">在线</div>
-            </div>
+      <div class="card">
+        <h2>连接状态 <span class="step-count" id="connStepLabel">-</span></h2>
+        <div class="stats">
+          <div class="stat">
+            <div class="num purple" id="statAgentId">-</div>
+            <div class="label">agentId</div>
           </div>
-          <ul class="test-list">
-            <li>
-              <span class="label">1. WebSocket 连接</span
-              ><span class="status status-wait" id="t1">等待</span>
-            </li>
-            <li>
-              <span class="label">2. 认证成功 (auth_ok)</span
-              ><span class="status status-wait" id="t2">等待</span>
-            </li>
-            <li>
-              <span class="label">3. SDK 就绪 (allSet)</span
-              ><span class="status status-wait" id="t3">等待</span>
-            </li>
-            <li>
-              <span class="label">4. 自动上班已发送</span
-              ><span class="status status-wait" id="t4">等待</span>
-            </li>
-            <li>
-              <span class="label">5. 会话列表已拉取</span
-              ><span class="status status-wait" id="t5">等待</span>
-            </li>
-          </ul>
-          <div class="summary-bar">
-            <span class="item"
-              ><span class="dot dot-green"></span> <span id="testPass">0</span> 通过</span
-            >
-            <span class="item"
-              ><span class="dot dot-red"></span> <span id="testFail">0</span> 失败</span
-            >
-            <span class="item"
-              ><span class="dot dot-gray"></span> <span id="testTotal">5</span> 总计</span
-            >
+          <div class="stat">
+            <div class="num blue" id="statConnId">-</div>
+            <div class="label">connId</div>
           </div>
-          <div class="row">
-            <button class="btn btn-default" id="btnSendMsg">发送消息</button>
-            <button class="btn btn-default" id="btnRefreshSessions">刷新会话</button>
-            <button class="btn btn-default" id="btnToggleOnline">上班/下班</button>
-            <button class="btn btn-primary" id="btnAcceptSession">接入会话</button>
-          </div>
-          <div class="row" style="margin-top: 6px">
-            <input
-              type="text"
-              id="inputTestMsg"
-              value="您好，我是客服，请问有什么可以帮助您的？"
-              placeholder="消息内容"
-              style="
-                flex: 1;
-                padding: 4px 8px;
-                border: 1px solid #d9d9d9;
-                border-radius: 4px;
-                font-size: 12px;
-              "
-            />
-            <input
-              type="text"
-              id="inputAcceptSid"
-              value=""
-              placeholder="会话ID"
-              style="
-                width: 100px;
-                padding: 4px 8px;
-                border: 1px solid #d9d9d9;
-                border-radius: 4px;
-                font-size: 12px;
-              "
-            />
+          <div class="stat">
+            <div class="num" id="statOnlineStatus">-</div>
+            <div class="label">在线</div>
           </div>
         </div>
-        <div class="card">
-          <h2>会话列表 <span class="step-count" id="sessionCount">0</span></h2>
-          <div
-            id="sessionListContainer"
-            style="font-size: 12px; max-height: 220px; overflow-y: auto; margin-bottom: 8px"
+        <ul class="test-list">
+          <li>
+            <span class="label">1. WebSocket 连接</span
+            ><span class="status status-wait" id="t1">等待</span>
+          </li>
+          <li>
+            <span class="label">2. 认证成功 (auth_ok)</span
+            ><span class="status status-wait" id="t2">等待</span>
+          </li>
+          <li>
+            <span class="label">3. SDK 就绪 (allSet)</span
+            ><span class="status status-wait" id="t3">等待</span>
+          </li>
+          <li>
+            <span class="label">4. 自动上班已发送</span
+            ><span class="status status-wait" id="t4">等待</span>
+          </li>
+          <li>
+            <span class="label">5. 会话列表已拉取</span
+            ><span class="status status-wait" id="t5">等待</span>
+          </li>
+        </ul>
+        <div class="summary-bar">
+          <span class="item"
+            ><span class="dot dot-green"></span> <span id="testPass">0</span> 通过</span
           >
-            <div style="color: #999; padding: 20px 0; text-align: center">暂无会话</div>
-          </div>
+          <span class="item"
+            ><span class="dot dot-red"></span> <span id="testFail">0</span> 失败</span
+          >
+          <span class="item"
+            ><span class="dot dot-gray"></span> <span id="testTotal">5</span> 总计</span
+          >
+        </div>
+        <div class="row">
+          <button class="btn btn-default" id="btnToggleOnline">上班/下班</button>
         </div>
       </div>
 
@@ -121,14 +79,7 @@
     <script type="module">
       import { AgentSDK, CcsimError } from '../src/index.ts'
 
-      const sessionCount = document.getElementById('sessionCount')
-      const sessionListContainer = document.getElementById('sessionListContainer')
-      const btnSendMsg = document.getElementById('btnSendMsg')
-      const btnRefreshSessions = document.getElementById('btnRefreshSessions')
       const btnToggleOnline = document.getElementById('btnToggleOnline')
-      const btnAcceptSession = document.getElementById('btnAcceptSession')
-      const inputTestMsg = document.getElementById('inputTestMsg')
-      const inputAcceptSid = document.getElementById('inputAcceptSid')
 
       window.ExampleUtils.init({ testIds: ['t1', 't2', 't3', 't4', 't5'] })
       const { log, setTestStatus, updateConnInfo } = window.ExampleUtils
@@ -153,11 +104,6 @@
         updateConnInfo('statAgentId', sdk.agentId || '-')
         updateConnInfo('statConnId', sdk.getStore()?.connId || '-')
         document.getElementById('connStepLabel').textContent = '✓ 就绪'
-        setTimeout(() => {
-          sdk.requestSessionList(1, 50)
-          log('请求会话列表...', 'debug')
-          setTestStatus('t5', 'progress')
-        }, 1000)
       })
 
       sdk.on('agentStatus', (onlineCount, hasOnlineAgent) => {
@@ -192,32 +138,6 @@
         setTestStatus('t5', 'pass')
       })
 
-      btnSendMsg.addEventListener('click', () => {
-        const content = inputTestMsg.value.trim()
-        if (!content) {
-          log('请输入消息内容', 'warn')
-          return
-        }
-        if (!sdk.connected) {
-          log('未连接，无法发送', 'warn')
-          return
-        }
-        if (!sdk.currentSessionId) {
-          log('未选择会话，无法发送', 'warn')
-          return
-        }
-        sdk.sendChat(content)
-        log(`向会话 ${sdk.currentSessionId} 发送消息: "${content}"`, 'event')
-      })
-
-      btnRefreshSessions.addEventListener('click', () => {
-        if (!sdk.connected) {
-          log('未连接', 'warn')
-          return
-        }
-        sdk.requestSessionList(1, 50)
-      })
-
       btnToggleOnline.addEventListener('click', () => {
         if (!sdk.connected) {
           log('未连接', 'warn')
@@ -226,20 +146,6 @@
         const isOnline = sdk.getStore()?.isAgentOnline ?? false
         isOnline ? sdk.setAgentOffline() : sdk.setAgentOnline()
         log(isOnline ? '手动下班' : '手动上班', 'event')
-      })
-
-      btnAcceptSession.addEventListener('click', () => {
-        const sid = inputAcceptSid.value.trim()
-        if (!sid) {
-          log('请输入会话ID', 'warn')
-          return
-        }
-        const numId = parseInt(sid, 10)
-        if (isNaN(numId)) {
-          log('无效会话ID', 'warn')
-          return
-        }
-        sdk.acceptSession(numId)
       })
 
       let connCheckInterval = setInterval(() => {

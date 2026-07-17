@@ -23,7 +23,7 @@ export class AgentHistoryBatchHandler implements MessageHandler<HistoryBatch> {
 
     if (!msg.data || !msg.data.length) {
       logger.debug('HistoryBatch: empty batch for session', sid)
-      store._hasMoreHistory[sid] = false
+      store.hasMoreHistory[sid] = false
       store.historyLoading[sid] = false
       return
     }
@@ -40,7 +40,7 @@ export class AgentHistoryBatchHandler implements MessageHandler<HistoryBatch> {
 
     if (!incoming.length) {
       logger.debug('HistoryBatch: all messages deduplicated for session', sid)
-      store._hasMoreHistory[sid] = false
+      store.hasMoreHistory[sid] = false
       store.historyLoading[sid] = false
       return
     }
@@ -64,7 +64,7 @@ export class AgentHistoryBatchHandler implements MessageHandler<HistoryBatch> {
       )
     }
 
-    store._hasMoreHistory[sid] = incoming.length >= (msg.count ?? 20)
+    store.hasMoreHistory[sid] = incoming.length >= (msg.count ?? 20)
     store.historyLoading[sid] = false
 
     logger.debug('HistoryBatch: prepended', incoming.length, 'messages to session', sid)

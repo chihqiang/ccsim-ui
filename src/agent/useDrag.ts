@@ -14,8 +14,19 @@ export function useDrag(panelRef: { value: HTMLElement | null }) {
 
     onMove = (ev: MouseEvent) => {
       if (!panelRef.value) return
-      panelRef.value.style.left = `${ev.clientX - offsetX}px`
-      panelRef.value.style.top = `${ev.clientY - offsetY}px`
+      const w = panelRef.value.offsetWidth
+      const h = panelRef.value.offsetHeight
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+
+      let left = ev.clientX - offsetX
+      let top = ev.clientY - offsetY
+
+      left = Math.min(Math.max(left, 0), vw - w)
+      top = Math.min(Math.max(top, 0), vh - h)
+
+      panelRef.value.style.left = `${left}px`
+      panelRef.value.style.top = `${top}px`
       panelRef.value.style.right = 'auto'
       panelRef.value.style.bottom = 'auto'
     }

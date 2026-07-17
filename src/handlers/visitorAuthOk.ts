@@ -1,7 +1,7 @@
 import type { AuthOk } from '@/types'
 import type { HandlerContext, MessageHandler } from '@/handlers/visitorContext'
 import { store, resetStore } from '@/store/visitor'
-import { loadSessionId } from '@/store/visitorStorage'
+import { loadSessionId, loadHadSession } from '@/store/visitorStorage'
 import { logger } from '@/utils/logger'
 import { SDKStatusEnum } from '@/types/sdk'
 
@@ -21,8 +21,11 @@ export class VisitorAuthOkHandler implements MessageHandler<AuthOk> {
     const sid = loadSessionId()
     if (sid != null && store.status === 'connected') {
       store.sessionId = sid
+      store.hadSession = true
       store.historyLoading = true
       ctx.requestSessionHistory(sid)
+    } else if (loadHadSession()) {
+      store.hadSession = true
     }
     ctx.emit('allSet')
   }

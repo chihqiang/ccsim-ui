@@ -33,8 +33,8 @@ export class AgentSessionListResHandler implements MessageHandler<SessionListRes
     } else {
       store.sessions.push(...items)
     }
-    store._hasMoreSessions = items.length >= msg.limit
-    store._sessionPage = msg.page
+    store.hasMoreSessions = items.length >= msg.limit
+    store.sessionPage = msg.page
     ctx.emit('sessionListUpdated')
   }
 }

@@ -50,7 +50,7 @@ function handleClick(item: ToolbarItem) {
 }
 </script>
 
-<style>
+<style scoped>
 .ccsim-toolbar {
   display: flex;
   align-items: center;
@@ -74,7 +74,7 @@ function handleClick(item: ToolbarItem) {
   outline: none;
   padding: 0;
 }
-.ccsim-toolbar__btn svg {
+.ccsim-toolbar__btn :deep(svg) {
   width: 16px;
   height: 16px;
 }

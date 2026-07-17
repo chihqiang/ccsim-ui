@@ -9,7 +9,7 @@ export class VisitorHistoryBatchHandler implements MessageHandler<HistoryBatch> 
   readonly type = 'history_batch'
   handle(msg: HistoryBatch, _ctx: HandlerContext): void {
     if (!msg.data || !msg.data.length) {
-      store._hasMoreHistory = false
+      store.hasMoreHistory = false
       store.historyLoading = false
       return
     }
@@ -23,7 +23,7 @@ export class VisitorHistoryBatchHandler implements MessageHandler<HistoryBatch> 
     }
 
     if (!incoming.length) {
-      store._hasMoreHistory = false
+      store.hasMoreHistory = false
       store.historyLoading = false
       return
     }
@@ -31,7 +31,7 @@ export class VisitorHistoryBatchHandler implements MessageHandler<HistoryBatch> 
     store.messages.unshift(...incoming)
     ensureSortByCreatedAt(store.messages)
 
-    store._hasMoreHistory = incoming.length >= (msg.count ?? 20)
+    store.hasMoreHistory = incoming.length >= (msg.count ?? 20)
     store.historyLoading = false
   }
 }

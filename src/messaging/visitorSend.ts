@@ -111,14 +111,7 @@ export function sendChat(ctx: SendChatContext, content: string, msgType: MsgType
     return
   }
 
-  if (!ctx.sessionId) {
-    const err = t('send.noSession')
-    logger.warn(err)
-    ctx.emit('messageError', err)
-    return
-  }
-
-  const cid = ctx.sessionId
+  const cid = ctx.sessionId ?? 0
 
   const sanitized = sanitizeMessage(trimmed)
   const tempId = uuidv4()

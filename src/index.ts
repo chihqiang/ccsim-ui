@@ -28,8 +28,8 @@ export type { SessionStatus } from '@/types/store'
 // Plugin types
 export type { ToolbarItem, ToolbarContext } from '@/types/toolbar'
 export type { PanelSection, PanelSectionContext } from '@/types/panelSection'
-export type { RightPanelTab } from '@/types/rightPanel'
-export { DEFAULT_TAB_KEY, DEFAULT_TAB_ORDER } from '@/types/rightPanel'
+export type { RightPanelModule } from '@/types/rightPanel'
+export { DEFAULT_MODULE_KEY, DEFAULT_MODULE_ORDER } from '@/types/rightPanel'
 
 // Events
 export type { SdkEvents, SdkEventName } from '@/types/events'
