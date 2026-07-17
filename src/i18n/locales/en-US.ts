@@ -76,7 +76,6 @@ export default {
     title: 'Rate this service',
     later: 'Rate Later',
     thanks: 'Thank you for your rating',
-    labels: ['Satisfied', 'Neutral', 'Dissatisfied'],
   },
   chat: {
     loadingHistory: 'Loading history...',

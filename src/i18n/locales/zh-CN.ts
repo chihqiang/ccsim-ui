@@ -75,7 +75,6 @@ export default {
     title: '请评价本次服务',
     later: '稍后评价',
     thanks: '感谢您的评价',
-    labels: ['满意', '一般', '不满意'],
   },
   chat: {
     loadingHistory: '加载历史消息...',
