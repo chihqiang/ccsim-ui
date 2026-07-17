@@ -18,7 +18,11 @@
         </div>
       </div>
     </div>
-    <button class="ccsim-panel__close-session" @click="$emit('closeSession')">
+    <button
+      class="ccsim-panel__close-session"
+      :class="{ 'ccsim-panel__close-session--confirm': confirmClose }"
+      @click="handleClose"
+    >
       <svg
         viewBox="0 0 24 24"
         fill="none"
@@ -31,18 +35,37 @@
         <line x1="15" y1="9" x2="9" y2="15" />
         <line x1="9" y1="9" x2="15" y2="15" />
       </svg>
-      {{ $t('visitorInfo.closeSession') }}
+      {{ confirmClose ? $t('visitorInfo.confirmClose') : $t('visitorInfo.closeSession') }}
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onUnmounted } from 'vue'
 import { Image as VanImage } from 'vant'
 import { useCurrentVisitor } from '@/agent/useCurrentVisitor'
 
-defineEmits<{ closeSession: [] }>()
+const emit = defineEmits<{ closeSession: [] }>()
 
 const { currentVisitorName, currentVisitorAvatar, currentVisitorSource } = useCurrentVisitor()
+
+const confirmClose = ref(false)
+let confirmTimer: ReturnType<typeof setTimeout> | null = null
+
+function handleClose() {
+  if (confirmClose.value) {
+    emit('closeSession')
+    return
+  }
+  confirmClose.value = true
+  confirmTimer = setTimeout(() => {
+    confirmClose.value = false
+  }, 3000)
+}
+
+onUnmounted(() => {
+  if (confirmTimer) clearTimeout(confirmTimer)
+})
 </script>
 
 <style scoped>
@@ -106,5 +129,10 @@ const { currentVisitorName, currentVisitorAvatar, currentVisitorSource } = useCu
   background: var(--cl-danger-bg);
   border-color: var(--cl-danger);
   color: var(--cl-danger);
+}
+.ccsim-panel__close-session--confirm {
+  background: var(--cl-danger);
+  border-color: var(--cl-danger);
+  color: #fff;
 }
 </style>

@@ -14,6 +14,9 @@ export default {
       emptyTitle: 'No messages',
       emptyDesc: 'Type a message to start chatting',
       placeholder: 'Type your question...',
+      sessionEnded: 'Session Ended',
+      sessionEndedDesc: 'Click the button below to start a new conversation',
+      restartSession: 'Start New Conversation',
     },
     agent: {
       title: 'Agent Console',
@@ -24,8 +27,9 @@ export default {
       loggingIn: 'Going Online...',
       emptyTitle: 'Select a session',
       emptyDesc: 'Select a session from the list to start chatting',
+      noSession: 'Select a session from the list to start serving',
       placeholder: 'Type a message...',
-      closeTitle: 'Minimize',
+      closeTitle: 'Close',
       fullscreenTitle: 'Fullscreen',
       offlineTitleAttr: 'Go Offline',
       onlineSuffix: ' · Online',
@@ -66,6 +70,7 @@ export default {
     userAgent: 'User Agent',
     platform: 'Platform',
     closeSession: 'Close Session',
+    confirmClose: 'Confirm',
   },
   satisfaction: {
     title: 'Rate this service',

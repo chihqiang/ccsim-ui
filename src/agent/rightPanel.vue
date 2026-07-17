@@ -1,42 +1,9 @@
 <template>
   <div class="ccsim-right-panel">
-    <!-- Grid view: show all modules as icons -->
-    <template v-if="!store.activeRightPanelDetail">
-      <div class="ccsim-right-panel__header">
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="14" y="3" width="7" height="7" />
-          <rect x="3" y="14" width="7" height="7" />
-          <rect x="14" y="14" width="7" height="7" />
-        </svg>
-        <span class="ccsim-right-panel__title">{{ $t('panel.agent.tools') }}</span>
-      </div>
-      <div class="ccsim-right-panel__grid scrollbar-thin">
-        <button
-          v-for="mod in sortedModules"
-          :key="mod.key"
-          class="ccsim-right-panel__grid-item"
-          @click="openDetail(mod.key)"
-        >
-          <div class="ccsim-right-panel__grid-icon" v-html="mod.icon" />
-          <span class="ccsim-right-panel__grid-label">{{ mod.label }}</span>
-        </button>
-      </div>
-    </template>
-
-    <!-- Detail view: show selected module content -->
-    <template v-else>
-      <div class="ccsim-right-panel__header ccsim-right-panel__header--detail">
-        <button class="ccsim-right-panel__back" @click="closeDetail">
+    <Transition name="ccsim-right-panel__view" mode="out-in">
+      <!-- Grid view: show all modules as icons -->
+      <div v-if="!store.activeRightPanelDetail" key="grid" class="ccsim-right-panel__view">
+        <div class="ccsim-right-panel__header">
           <svg
             width="14"
             height="14"
@@ -47,19 +14,54 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <polyline points="15 18 9 12 15 6" />
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
           </svg>
-        </button>
-        <span class="ccsim-right-panel__title">{{ activeDetailModule?.label }}</span>
+          <span class="ccsim-right-panel__title">{{ $t('panel.agent.tools') }}</span>
+        </div>
+        <div class="ccsim-right-panel__grid scrollbar-thin">
+          <button
+            v-for="mod in sortedModules"
+            :key="mod.key"
+            class="ccsim-right-panel__grid-item"
+            @click="openDetail(mod.key)"
+          >
+            <div class="ccsim-right-panel__grid-icon" v-html="mod.icon" />
+            <span class="ccsim-right-panel__grid-label">{{ mod.label }}</span>
+          </button>
+        </div>
       </div>
-      <div class="ccsim-right-panel__body scrollbar-thin">
-        <component
-          v-if="activeDetailModule"
-          :is="activeDetailModule.component"
-          :key="activeDetailModule.key"
-        />
+
+      <!-- Detail view: show selected module content -->
+      <div v-else key="detail" class="ccsim-right-panel__view">
+        <div class="ccsim-right-panel__header ccsim-right-panel__header--detail">
+          <button class="ccsim-right-panel__back" @click="closeDetail">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <span class="ccsim-right-panel__title">{{ activeDetailModule?.label }}</span>
+        </div>
+        <div class="ccsim-right-panel__body scrollbar-thin">
+          <component
+            v-if="activeDetailModule"
+            :is="activeDetailModule.component"
+            :key="activeDetailModule.key"
+          />
+        </div>
       </div>
-    </template>
+    </Transition>
   </div>
 </template>
 
@@ -122,6 +124,25 @@ watch(
   flex-direction: column;
   background: var(--cl-bg-container);
   flex-shrink: 0;
+  overflow: hidden;
+}
+.ccsim-right-panel__view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.ccsim-right-panel__view-enter-active,
+.ccsim-right-panel__view-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.ccsim-right-panel__view-enter-from {
+  opacity: 0;
+  transform: translateX(8px);
+}
+.ccsim-right-panel__view-leave-to {
+  opacity: 0;
+  transform: translateX(-8px);
 }
 .ccsim-right-panel__header {
   display: flex;

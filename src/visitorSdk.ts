@@ -4,7 +4,7 @@ import { store } from '@/store/visitor'
 import { registerHandlers } from '@/handlers/visitor'
 import { mountApp, unmountApp } from '@/visitor/mount'
 import { logger } from '@/utils/logger'
-import { resolveVisitorUUID } from '@/store/visitorStorage'
+import { resolveVisitorUUID, clearHadSession } from '@/store/visitorStorage'
 import { buildVisitorAuth } from '@/visitor/sdkAuth'
 import { sendChat, createSendState, type SendChatContext } from '@/messaging/visitorSend'
 import { MessagePipeline } from '@/messaging/visitorPipeline'
@@ -29,6 +29,7 @@ export class VisitorSDK extends BaseSDK {
   handlers = registerHandlers()
   pipeline = new MessagePipeline()
   sendState = createSendState()
+  private _rawOptions: Record<string, unknown> | null = null
 
   constructor(options: VisitorInitOptions) {
     super()
@@ -37,7 +38,8 @@ export class VisitorSDK extends BaseSDK {
       return instance
     }
     instance = this
-    this.init(options as unknown as Record<string, unknown>)
+    this._rawOptions = options as unknown as Record<string, unknown>
+    this.init(this._rawOptions)
     this._registerDefaults()
   }
 
@@ -212,6 +214,16 @@ export class VisitorSDK extends BaseSDK {
     this.ensureMounted()
     store.panelVisible = false
     store.widgetVisible = true
+  }
+
+  async restart() {
+    logger.debug('restart: 销毁当前实例并重新连接')
+    clearHadSession()
+    await this.destroy()
+    instance = null
+    if (this._rawOptions) {
+      new VisitorSDK(this._rawOptions as unknown as VisitorInitOptions)
+    }
   }
 
   registerToolbar(item: ToolbarItem) {

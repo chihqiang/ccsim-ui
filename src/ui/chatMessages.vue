@@ -1,9 +1,20 @@
 <template>
   <div ref="scrollRef" class="ccsim-msgs scrollbar-thin" @scroll="onScroll">
-    <!-- History loading -->
-    <div v-if="historyLoading" class="ccsim-msgs__loader">
+    <!-- History loading (top) -->
+    <div v-if="historyLoading && messages.length" class="ccsim-msgs__loader">
       <div class="ccsim-msgs__loader-spinner" />
       <span>{{ $t('chat.loadingHistory') }}</span>
+    </div>
+
+    <!-- Skeleton loading (initial switch) -->
+    <div v-if="historyLoading && !messages.length" class="ccsim-msgs__skeleton">
+      <div v-for="i in 4" :key="i" class="ccsim-msgs__skeleton-row" :class="{ 'ccsim-msgs__skeleton-row--right': i % 3 === 0 }">
+        <div class="ccsim-msgs__skeleton-avatar" />
+        <div class="ccsim-msgs__skeleton-bubble">
+          <div class="ccsim-msgs__skeleton-line" :style="{ width: (40 + (i * 17) % 50) + '%' }" />
+          <div v-if="i % 2 === 0" class="ccsim-msgs__skeleton-line" style="width: 60%" />
+        </div>
+      </div>
     </div>
 
     <!-- Empty state -->
@@ -70,6 +81,15 @@
       </div>
     </div>
   </div>
+
+  <!-- Scroll to bottom FAB -->
+  <Transition name="ccsim-fab">
+    <button v-if="!isNearBottom && messages.length" class="ccsim-msgs__fab" @click="scrollToBottom">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </button>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -97,6 +117,7 @@ const emit = defineEmits<{
 
 const scrollRef = ref<HTMLElement>()
 const isNearBottom = ref(true)
+let prevScrollHeight = 0
 
 function scrollToBottom() {
   const el = scrollRef.value
@@ -120,10 +141,26 @@ watch(
   { deep: true },
 )
 
+watch(
+  () => props.historyLoading,
+  async (loading, oldLoading) => {
+    if (loading && !oldLoading) {
+      prevScrollHeight = scrollRef.value?.scrollHeight ?? 0
+    } else if (!loading && oldLoading && prevScrollHeight > 0) {
+      await nextTick()
+      const el = scrollRef.value
+      if (el) {
+        el.scrollTop += el.scrollHeight - prevScrollHeight
+      }
+      prevScrollHeight = 0
+    }
+  },
+)
+
 function onScroll() {
   const el = scrollRef.value
   if (!el) return
-  isNearBottom.value = el.scrollHeight - el.scrollTop - el.clientHeight <= el.clientHeight * 0.3
+  isNearBottom.value = el.scrollHeight - el.scrollTop - el.clientHeight <= el.clientHeight * 0.15
   if (el.scrollTop <= 40 && props.hasMoreHistory && !props.historyLoading) emit('loadMore')
 }
 
@@ -169,6 +206,7 @@ function formatDateLabel(ts: number): string {
   overflow-y: auto;
   background: var(--cl-bg-page);
   padding: var(--sp-3) 0;
+  position: relative;
 }
 
 /* Loader */
@@ -189,6 +227,50 @@ function formatDateLabel(ts: number): string {
   border-top-color: var(--cl-primary);
   border-radius: var(--radius-full);
   animation: ccsim-spin 0.6s linear infinite;
+}
+
+/* Skeleton */
+.ccsim-msgs__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-6) var(--sp-4);
+  animation: ccsim-fade-in var(--transition-base);
+}
+.ccsim-msgs__skeleton-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+}
+.ccsim-msgs__skeleton-row--right {
+  flex-direction: row-reverse;
+}
+.ccsim-msgs__skeleton-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background: var(--cl-gray-200);
+  flex-shrink: 0;
+  animation: ccsim-pulse-dot 1.4s ease-in-out infinite;
+}
+.ccsim-msgs__skeleton-bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  background: var(--cl-gray-100);
+  border-radius: var(--radius-lg);
+  min-width: 80px;
+  max-width: 65%;
+}
+.ccsim-msgs__skeleton-line {
+  height: 10px;
+  border-radius: 4px;
+  background: var(--cl-gray-200);
+  animation: ccsim-pulse-dot 1.4s ease-in-out infinite;
+}
+.ccsim-msgs__skeleton-line:nth-child(2) {
+  animation-delay: 0.2s;
 }
 
 /* Empty state */
@@ -278,5 +360,43 @@ function formatDateLabel(ts: number): string {
 }
 .ccsim-msgs__typing-dot:nth-child(3) {
   animation-delay: 0.4s;
+}
+
+/* Scroll to bottom FAB */
+.ccsim-msgs__fab {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--cl-border);
+  background: var(--cl-bg-container);
+  color: var(--cl-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-panel);
+  transition: all var(--transition-fast);
+  z-index: 5;
+}
+.ccsim-msgs__fab svg {
+  width: 18px;
+  height: 18px;
+}
+.ccsim-msgs__fab:hover {
+  background: var(--cl-primary);
+  border-color: var(--cl-primary);
+  color: #fff;
+}
+.ccsim-fab-enter-active,
+.ccsim-fab-leave-active {
+  transition: all 0.2s ease;
+}
+.ccsim-fab-enter-from,
+.ccsim-fab-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
 }
 </style>

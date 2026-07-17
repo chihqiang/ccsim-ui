@@ -8,14 +8,15 @@ import type { ChatAck } from '@/types'
 import type { HandlerContext, MessageHandler } from '@/handlers/agentContext'
 import { store } from '@/store/agent'
 import { cancelOptimisticTimer } from '@/messaging/coreSend'
+import { registerSeenMsgId } from '@/utils/dedup'
 import { logger } from '@/utils/logger'
 
 export class AgentChatAckHandler implements MessageHandler<ChatAck> {
   readonly type = 'chat_ack'
 
   handle(msg: ChatAck, ctx: HandlerContext): void {
-    // 取消超时计时器
     cancelOptimisticTimer(ctx.sendState, msg.temp_id)
+    if (msg.msg_id > 0) registerSeenMsgId(msg.msg_id)
 
     // 解析乐观消息并同步写入 messagesMap
     const resolved = ctx.pipeline.resolveByAck(

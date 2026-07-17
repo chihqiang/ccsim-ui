@@ -24,6 +24,8 @@ export interface VisitorStoreState {
   historyLoading: boolean
   toolbarItems: ToolbarItem[]
   panelSections: PanelSection[]
+  /** 是否曾经有过会话（用于区分首次进入和会话结束后） */
+  hadSession: boolean
 }
 
 function createInitialState(): VisitorStoreState {
@@ -43,6 +45,7 @@ function createInitialState(): VisitorStoreState {
     historyLoading: false,
     toolbarItems: [],
     panelSections: [],
+    hadSession: false,
   }
 }
 

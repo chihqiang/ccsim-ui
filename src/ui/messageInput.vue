@@ -9,10 +9,12 @@
           :border="false"
           rows="1"
           autosize
+          :maxlength="2000"
           @keydown.enter="onEnter"
           @compositionstart="isComposing = true"
           @compositionend="onCompositionEnd"
         />
+        <span v-if="text.length" class="ccsim-input__count">{{ text.length }}/2000</span>
       </div>
       <button
         :class="['ccsim-input__send', text.trim() ? 'ccsim-input__send--active' : '']"
@@ -45,6 +47,7 @@ const emit = defineEmits<{ send: [text: string] }>()
 const text = ref('')
 const isComposing = ref(false)
 const pendingEnter = ref(false)
+const sending = ref(false)
 
 function onEnter(e: KeyboardEvent) {
   if (isComposing.value) {
@@ -63,10 +66,13 @@ function onCompositionEnd() {
   }
 }
 function send() {
+  if (sending.value) return
   const trimmed = text.value.trim()
   if (!trimmed) return
   emit('send', trimmed)
   text.value = ''
+  sending.value = true
+  setTimeout(() => { sending.value = false }, 300)
 }
 </script>
 
@@ -108,6 +114,14 @@ function send() {
 .ccsim-input__field-wrap:focus-within {
   border-color: var(--cl-primary);
   box-shadow: 0 0 0 3px var(--cl-primary-subtle);
+}
+.ccsim-input__count {
+  display: block;
+  text-align: right;
+  font-size: 11px;
+  color: var(--cl-text-disabled);
+  padding-top: 2px;
+  line-height: 1;
 }
 
 /* Send button */

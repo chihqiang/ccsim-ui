@@ -119,7 +119,6 @@
         updateConnInfo('statSessionId', sdk.sessionId || '-')
         updateConnInfo('statVisitorId', sdk.visitorId || '-')
         btnReconnect.disabled = false
-        btnSendMsg.disabled = false
       })
 
       sdk.on('agentStatus', (onlineCount, hasOnlineAgent) => {

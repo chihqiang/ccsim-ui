@@ -13,6 +13,9 @@ export default {
       emptyTitle: '暂无消息',
       emptyDesc: '输入消息开始对话',
       placeholder: '输入您的问题...',
+      sessionEnded: '会话已结束',
+      sessionEndedDesc: '如需继续咨询，请点击下方按钮重新发起会话',
+      restartSession: '重新发起咨询',
     },
     agent: {
       title: '客服工作台',
@@ -23,8 +26,9 @@ export default {
       loggingIn: '上班中...',
       emptyTitle: '请选择一个会话',
       emptyDesc: '从左侧列表选择会话开始聊天',
+      noSession: '选择左侧会话开始服务',
       placeholder: '输入消息...',
-      closeTitle: '收起',
+      closeTitle: '关闭',
       fullscreenTitle: '全屏',
       offlineTitleAttr: '下班',
       onlineSuffix: ' · 在线',
@@ -65,6 +69,7 @@ export default {
     userAgent: '浏览器UA',
     platform: '平台',
     closeSession: '关闭会话',
+    confirmClose: '确认关闭',
   },
   satisfaction: {
     title: '请评价本次服务',

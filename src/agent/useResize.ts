@@ -62,7 +62,6 @@ export function useResize(panelRef: { value: HTMLElement | null }) {
         panel.style.width = `${w}px`
       }
       if (direction === 'bottom-left') {
-        const w = Math.min(Math.max(startW - dx, MIN_WIDTH), startLeft + startW)
         const newW = startW - dx
         if (newW >= MIN_WIDTH && newW <= startLeft + startW) {
           panel.style.width = `${newW}px`

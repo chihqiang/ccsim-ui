@@ -33,7 +33,14 @@
           <div class="ccsim-panel__session" :style="{ width: sessionW + 'px' }">
             <SessionList />
           </div>
-          <div class="ccsim-splitter ccsim-splitter--v" @mousedown="startSessionSplit" />
+          <div
+            class="ccsim-splitter ccsim-splitter--v"
+            role="separator"
+            aria-orientation="vertical"
+            tabindex="0"
+            @mousedown="startSessionSplit"
+            @keydown="onSplitterKey('session', $event)"
+          />
           <div class="ccsim-panel__chat">
             <!-- Chat header -->
             <ChatHeader v-if="store.currentSessionId" @close-session="handleCloseSession" />
@@ -91,7 +98,14 @@
             />
           </div>
           <template v-if="store.currentSessionId">
-            <div class="ccsim-splitter ccsim-splitter--v" @mousedown="startRightSplit" />
+            <div
+              class="ccsim-splitter ccsim-splitter--v"
+              role="separator"
+              aria-orientation="vertical"
+              tabindex="0"
+              @mousedown="startRightSplit"
+              @keydown="onSplitterKey('right', $event)"
+            />
             <div class="ccsim-panel__right" :style="{ width: rightW + 'px' }">
               <RightPanel />
             </div>
@@ -155,10 +169,26 @@ const { isFullscreen, toggleFullscreen } = useFullscreen()
 const { startResize } = useResize(panelRef)
 const hasRightPanel = computed(() => !!store.currentSessionId)
 const { sessionW, rightW, startSessionSplit, startRightSplit } = useSplitter(hasRightPanel)
+
+function onSplitterKey(which: 'session' | 'right', e: KeyboardEvent) {
+  const step = e.shiftKey ? 40 : 10
+  if (which === 'session') {
+    if (e.key === 'ArrowRight') sessionW.value = Math.min(sessionW.value + step, 400)
+    else if (e.key === 'ArrowLeft') sessionW.value = Math.max(sessionW.value - step, 160)
+    else return
+  } else {
+    if (e.key === 'ArrowLeft') rightW.value = Math.min(rightW.value + step, 400)
+    else if (e.key === 'ArrowRight') rightW.value = Math.max(rightW.value - step, 160)
+    else return
+  }
+  e.preventDefault()
+}
+
 const { isLoggingIn, loginError, onLogin: handleLogin } = useAgentLogin()
 
 function hidePanel() {
   if (!sdk) return
+  previewUrl.value = null
   sdk.hidePanel()
 }
 
@@ -187,6 +217,16 @@ watch(
   { immediate: true },
 )
 
+watch(isFullscreen, (fs) => {
+  if (!fs && panelRef.value) {
+    const saved = loadPanelSize()
+    if (saved) {
+      panelRef.value.style.width = `${saved.width}px`
+      panelRef.value.style.height = `${saved.height}px`
+    }
+  }
+})
+
 const currentMessages = computed(() => store.messagesMap[store.currentSessionId ?? -1] ?? [])
 const currentHistoryLoading = computed(
   () => store.historyLoading[store.currentSessionId ?? -1] ?? false,
@@ -202,6 +242,7 @@ const toolbarContext = computed<ToolbarContext>(() => ({
 function handleCloseSession() {
   const id = store.currentSessionId
   if (id != null && sdk) sdk.closeSession(id)
+  previewUrl.value = null
 }
 
 const panelStyle = computed(() => {

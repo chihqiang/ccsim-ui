@@ -3,6 +3,7 @@ import { logger } from '@/utils/logger'
 
 const KEY_VISITOR_UUID = 'ccsim_visitor_uuid'
 const KEY_SESSION_ID = 'ccsim_session_id'
+const KEY_HAD_SESSION = 'ccsim_had_session'
 
 function isLocalStorageAvailable(): boolean {
   try {
@@ -86,5 +87,25 @@ export function clearSessionId(): void {
     localStorage.removeItem(KEY_SESSION_ID)
   } catch {
     logger.warn('visitorStorage: clear sessionId failed')
+  }
+}
+
+export function saveHadSession(): void {
+  safeSet(KEY_HAD_SESSION, '1')
+}
+
+export function loadHadSession(): boolean {
+  try {
+    return localStorage.getItem(KEY_HAD_SESSION) === '1'
+  } catch {
+    return false
+  }
+}
+
+export function clearHadSession(): void {
+  try {
+    localStorage.removeItem(KEY_HAD_SESSION)
+  } catch {
+    logger.warn('visitorStorage: clear hadSession failed')
   }
 }
