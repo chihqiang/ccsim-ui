@@ -10,8 +10,8 @@ import { sendChat, createSendState, type SendChatContext } from '@/messaging/age
 import { MessagePipeline } from '@/messaging/agentPipeline'
 import { BaseSDK } from '@/baseSdk'
 import { setLocale, t } from '@/i18n'
-import type { RightPanelTab } from '@/types/rightPanel'
-import { DEFAULT_TAB_KEY, DEFAULT_TAB_ORDER } from '@/types/rightPanel'
+import type { RightPanelModule } from '@/types/rightPanel'
+import { DEFAULT_MODULE_KEY, DEFAULT_MODULE_ORDER } from '@/types/rightPanel'
 import type { ToolbarItem } from '@/types/toolbar'
 import type { MsgType } from '@/types/store'
 import VisitorInfoTab from '@/tabs/VisitorInfo/visitorInfoTab.vue'
@@ -52,11 +52,12 @@ export class AgentSDK extends BaseSDK {
   }
 
   private _registerDefaults() {
-    this.registerRightPanelTab({
-      key: DEFAULT_TAB_KEY,
+    this.registerRightPanelModule({
+      key: DEFAULT_MODULE_KEY,
       label: '游客信息',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
       component: VisitorInfoTab,
-      order: DEFAULT_TAB_ORDER,
+      order: DEFAULT_MODULE_ORDER,
     })
   }
 
@@ -277,26 +278,26 @@ export class AgentSDK extends BaseSDK {
     store.widgetVisible = true
   }
 
-  registerRightPanelTab(tab: RightPanelTab) {
-    const exists = store.rightPanelTabs.some((t) => t.key === tab.key)
+  registerRightPanelModule(module: RightPanelModule) {
+    const exists = store.rightPanelModules.some((m) => m.key === module.key)
     if (exists) {
-      logger.warn(`RightPanelTab "${tab.key}" already registered, skipping`)
+      logger.warn(`RightPanelModule "${module.key}" already registered, skipping`)
       return
     }
-    const entry: RightPanelTab = { ...tab, order: tab.order ?? DEFAULT_TAB_ORDER }
-    store.rightPanelTabs.push(entry)
-    store.rightPanelTabs.sort((a, b) => a.order! - b.order!)
-    logger.debug(`RightPanelTab "${tab.key}" registered`)
+    const entry: RightPanelModule = { ...module, order: module.order ?? DEFAULT_MODULE_ORDER }
+    store.rightPanelModules.push(entry)
+    store.rightPanelModules.sort((a, b) => a.order! - b.order!)
+    logger.debug(`RightPanelModule "${module.key}" registered`)
   }
 
-  unregisterRightPanelTab(key: string) {
-    const idx = store.rightPanelTabs.findIndex((t) => t.key === key)
+  unregisterRightPanelModule(key: string) {
+    const idx = store.rightPanelModules.findIndex((m) => m.key === key)
     if (idx === -1) return
-    store.rightPanelTabs.splice(idx, 1)
-    if (store.activeRightPanelTab === key) {
-      store.activeRightPanelTab = store.rightPanelTabs[0]?.key ?? DEFAULT_TAB_KEY
+    store.rightPanelModules.splice(idx, 1)
+    if (store.activeRightPanelDetail === key) {
+      store.activeRightPanelDetail = null
     }
-    logger.debug(`RightPanelTab "${key}" unregistered`)
+    logger.debug(`RightPanelModule "${key}" unregistered`)
   }
 
   registerToolbar(item: ToolbarItem) {

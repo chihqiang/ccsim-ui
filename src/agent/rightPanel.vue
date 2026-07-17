@@ -1,76 +1,116 @@
 <template>
   <div class="ccsim-right-panel">
-    <!-- Tab bar: only when multiple tabs -->
-    <div v-if="tabs.length > 1" class="ccsim-right-panel__tabs">
-      <button
-        v-for="tab in tabs"
-        :key="tab.key"
-        :class="[
-          'ccsim-right-panel__tab',
-          store.activeRightPanelTab === tab.key ? 'ccsim-right-panel__tab--active' : '',
-        ]"
-        @click="store.activeRightPanelTab = tab.key"
-      >
-        {{ tab.label }}
-      </button>
-    </div>
+    <!-- Grid view: show all modules as icons -->
+    <template v-if="!store.activeRightPanelDetail">
+      <div class="ccsim-right-panel__header">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+        </svg>
+        <span class="ccsim-right-panel__title">{{ $t('panel.agent.tools') }}</span>
+      </div>
+      <div class="ccsim-right-panel__grid scrollbar-thin">
+        <button
+          v-for="mod in sortedModules"
+          :key="mod.key"
+          class="ccsim-right-panel__grid-item"
+          @click="openDetail(mod.key)"
+        >
+          <div class="ccsim-right-panel__grid-icon" v-html="mod.icon" />
+          <span class="ccsim-right-panel__grid-label">{{ mod.label }}</span>
+        </button>
+      </div>
+    </template>
 
-    <!-- Header: single tab mode -->
-    <div v-else class="ccsim-right-panel__header">
-      <svg
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-line-linecap="round"
-        stroke-line-linejoin="round"
-      >
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-      <span class="ccsim-right-panel__title">{{ activeTab?.label }}</span>
-    </div>
-
-    <!-- Tab content -->
-    <div class="ccsim-right-panel__body scrollbar-thin">
-      <component v-if="activeTab" :is="activeTab.component" :key="activeTab.key" />
-    </div>
+    <!-- Detail view: show selected module content -->
+    <template v-else>
+      <div class="ccsim-right-panel__header ccsim-right-panel__header--detail">
+        <button class="ccsim-right-panel__back" @click="closeDetail">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <span class="ccsim-right-panel__title">{{ activeDetailModule?.label }}</span>
+      </div>
+      <div class="ccsim-right-panel__body scrollbar-thin">
+        <component
+          v-if="activeDetailModule"
+          :is="activeDetailModule.component"
+          :key="activeDetailModule.key"
+        />
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { store } from '@/store/agent'
-import { DEFAULT_TAB_ORDER } from '@/types/rightPanel'
+import { DEFAULT_MODULE_ORDER } from '@/types/rightPanel'
 
-const tabs = computed(() => {
-  return [...store.rightPanelTabs].sort(
-    (a, b) => (a.order ?? DEFAULT_TAB_ORDER) - (b.order ?? DEFAULT_TAB_ORDER),
+const sortedModules = computed(() => {
+  return [...store.rightPanelModules].sort(
+    (a, b) => (a.order ?? DEFAULT_MODULE_ORDER) - (b.order ?? DEFAULT_MODULE_ORDER),
   )
 })
 
-const activeTab = computed(() => {
-  return tabs.value.find((t) => t.key === store.activeRightPanelTab) ?? tabs.value[0]
+const activeDetailModule = computed(() => {
+  if (!store.activeRightPanelDetail) return null
+  return store.rightPanelModules.find((m) => m.key === store.activeRightPanelDetail) ?? null
 })
 
-let prevTabKey: string | null = null
+function openDetail(key: string) {
+  const mod = store.rightPanelModules.find((m) => m.key === key)
+  if (!mod) return
 
+  // Deactivate previous module
+  if (store.activeRightPanelDetail) {
+    const prev = store.rightPanelModules.find((m) => m.key === store.activeRightPanelDetail)
+    prev?.onDeactivate?.()
+  }
+
+  store.activeRightPanelDetail = key
+  mod.onActivate?.()
+}
+
+function closeDetail() {
+  if (!store.activeRightPanelDetail) return
+
+  const mod = store.rightPanelModules.find((m) => m.key === store.activeRightPanelDetail)
+  mod?.onDeactivate?.()
+  store.activeRightPanelDetail = null
+}
+
+// Reset detail when session changes
 watch(
-  () => store.activeRightPanelTab,
-  (newKey) => {
-    if (prevTabKey && prevTabKey !== newKey) {
-      const prev = tabs.value.find((t) => t.key === prevTabKey)
-      prev?.onDeactivate?.()
+  () => store.currentSessionId,
+  () => {
+    if (store.activeRightPanelDetail) {
+      const mod = store.rightPanelModules.find((m) => m.key === store.activeRightPanelDetail)
+      mod?.onDeactivate?.()
+      store.activeRightPanelDetail = null
     }
-    if (newKey) {
-      const next = tabs.value.find((t) => t.key === newKey)
-      next?.onActivate?.()
-    }
-    prevTabKey = newKey
   },
-  { immediate: true },
 )
 </script>
 
@@ -91,39 +131,90 @@ watch(
   border-bottom: 1px solid var(--cl-border-light);
   color: var(--cl-text-secondary);
 }
+.ccsim-right-panel__header--detail {
+  gap: var(--sp-1);
+}
 .ccsim-right-panel__title {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--cl-text-primary);
 }
-.ccsim-right-panel__tabs {
-  display: flex;
-  border-bottom: 1px solid var(--cl-border-light);
-  overflow-x: auto;
-}
-.ccsim-right-panel__tab {
-  flex: 1;
-  min-width: 0;
-  padding: var(--sp-2_5) var(--sp-3);
+.ccsim-right-panel__back {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
   border: none;
-  background: transparent;
-  color: var(--cl-text-tertiary);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
+  background: var(--cl-bg-hover);
+  color: var(--cl-text-secondary);
   cursor: pointer;
-  white-space: nowrap;
-  border-bottom: 2px solid transparent;
-  transition:
-    color var(--transition-fast),
-    border-color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  padding: 0;
+  flex-shrink: 0;
 }
-.ccsim-right-panel__tab--active {
-  color: var(--cl-primary);
-  border-bottom-color: var(--cl-primary);
-}
-.ccsim-right-panel__tab:hover:not(.ccsim-right-panel__tab--active) {
+.ccsim-right-panel__back:hover {
+  background: var(--cl-gray-200);
   color: var(--cl-text-primary);
 }
+
+/* Grid view */
+.ccsim-right-panel__grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-3);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-2);
+  align-content: start;
+}
+.ccsim-right-panel__grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-2);
+  border: none;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.ccsim-right-panel__grid-item:hover {
+  background: var(--cl-bg-hover);
+}
+.ccsim-right-panel__grid-item:active {
+  transform: scale(0.96);
+}
+.ccsim-right-panel__grid-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  background: var(--cl-primary-light);
+  color: var(--cl-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+.ccsim-right-panel__grid-icon :deep(svg) {
+  width: 20px;
+  height: 20px;
+}
+.ccsim-right-panel__grid-item:hover .ccsim-right-panel__grid-icon {
+  background: var(--cl-primary);
+  color: #fff;
+}
+.ccsim-right-panel__grid-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--cl-text-secondary);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Detail view */
 .ccsim-right-panel__body {
   flex: 1;
   overflow-y: auto;

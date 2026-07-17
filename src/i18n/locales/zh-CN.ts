@@ -16,6 +16,7 @@ export default {
     },
     agent: {
       title: '客服工作台',
+      tools: '工具',
       offlineTitle: '客服工作台',
       offlineDesc: '点击上班即可开始接待访客',
       onlineBtn: '上班',

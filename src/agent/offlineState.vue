@@ -2,15 +2,7 @@
   <div class="ccsim-panel__offline">
     <div class="ccsim-panel__offline-card">
       <svg class="ccsim-panel__offline-icon" viewBox="0 0 80 80" fill="none">
-        <rect
-          x="8"
-          y="12"
-          width="64"
-          height="48"
-          rx="8"
-          stroke="currentColor"
-          stroke-width="2"
-        />
+        <rect x="8" y="12" width="64" height="48" rx="8" stroke="currentColor" stroke-width="2" />
         <path
           d="M24 36h32M24 44h20"
           stroke="currentColor"
@@ -29,12 +21,7 @@
       <h3>{{ $t('panel.agent.offlineTitle') }}</h3>
       <p>{{ $t('panel.agent.offlineDesc') }}</p>
       <button class="ccsim-panel__online-btn" :disabled="isLoggingIn" @click="$emit('login')">
-        <svg
-          v-if="isLoggingIn"
-          class="ccsim-panel__btn-spinner"
-          viewBox="0 0 24 24"
-          fill="none"
-        >
+        <svg v-if="isLoggingIn" class="ccsim-panel__btn-spinner" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.3" />
           <path
             d="M12 2a10 10 0 0 1 10 10"
@@ -43,9 +30,7 @@
             stroke-linecap="round"
           />
         </svg>
-        <span>{{
-          isLoggingIn ? $t('panel.agent.loggingIn') : $t('panel.agent.onlineBtn')
-        }}</span>
+        <span>{{ isLoggingIn ? $t('panel.agent.loggingIn') : $t('panel.agent.onlineBtn') }}</span>
       </button>
       <p v-if="loginError" class="ccsim-panel__error">
         <svg

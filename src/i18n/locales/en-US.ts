@@ -17,6 +17,7 @@ export default {
     },
     agent: {
       title: 'Agent Console',
+      tools: 'Tools',
       offlineTitle: 'Agent Console',
       offlineDesc: 'Click to start receiving visitors',
       onlineBtn: 'Go Online',

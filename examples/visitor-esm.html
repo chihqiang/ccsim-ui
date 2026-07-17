@@ -58,16 +58,7 @@
             >
           </div>
           <div class="row">
-            <button class="btn btn-primary" id="btnSendMsg">发送测试消息</button>
             <button class="btn btn-default" id="btnReconnect" disabled>重新连接</button>
-          </div>
-          <div class="row" style="margin-top: 6px">
-            <input
-              type="text"
-              id="inputTestMsg"
-              value="您好，我有个问题想咨询"
-              placeholder="消息内容"
-            />
           </div>
         </div>
         <div class="card">
@@ -100,9 +91,7 @@
     <script type="module">
       import { VisitorSDK, CcsimError, SDK_VERSION } from '@chihqiang/ccsim-ui'
 
-      const btnSendMsg = document.getElementById('btnSendMsg')
       const btnReconnect = document.getElementById('btnReconnect')
-      const inputTestMsg = document.getElementById('inputTestMsg')
 
       window.ExampleUtils.init({ testIds: ['t1', 't2', 't3', 't4'] })
       const { log, setTestStatus, updateConnInfo } = window.ExampleUtils
@@ -181,20 +170,6 @@
         }
       })
 
-      btnSendMsg.addEventListener('click', () => {
-        const content = inputTestMsg.value.trim()
-        if (!content) {
-          log('请输入消息内容', 'warn')
-          return
-        }
-        if (!sdk.connected) {
-          log('未连接，无法发送', 'warn')
-          return
-        }
-        sdk.sendChat(content)
-        log(`发送消息: "${content}"`, 'event')
-      })
-
       btnReconnect.addEventListener('click', () => {
         window.location.reload()
       })
@@ -202,20 +177,6 @@
       updateConnInfo('infoVersion', SDK_VERSION)
       log('SDK 已创建，等待连接...', 'debug')
       log('提示: 打开 agent-esm.html 并让客服上线来测试完整链路', 'info')
-
-      let autoMsgSent = false
-      sdk.on('allSet', () => {
-        if (!autoMsgSent) {
-          autoMsgSent = true
-          setTimeout(() => {
-            const testMsg = inputTestMsg.value.trim() || '您好，我有个问题想咨询'
-            if (sdk.connected) {
-              sdk.sendChat(testMsg)
-              log(`[自动] 发送测试消息: "${testMsg}"`, 'event')
-            }
-          }, 1500)
-        }
-      })
     </script>
   </body>
 </html>

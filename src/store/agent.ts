@@ -3,8 +3,8 @@ import type { ChatMessageItem, SessionListItem } from '@/types/store'
 import { SDKStatusEnum } from '@/types/sdk'
 import { clearSeenMsgIds } from '@/utils/dedup'
 import type { WaitingSessionListItem } from '@/types/serverMessage'
-import type { RightPanelTab } from '@/types/rightPanel'
-import { DEFAULT_TAB_KEY } from '@/types/rightPanel'
+import type { RightPanelModule } from '@/types/rightPanel'
+import { DEFAULT_MODULE_KEY } from '@/types/rightPanel'
 import type { ToolbarItem } from '@/types/toolbar'
 
 export interface AgentStoreState {
@@ -26,8 +26,9 @@ export interface AgentStoreState {
   hasMoreHistory: Record<number, boolean>
   hasMoreSessions: boolean
   sessionPage: number
-  rightPanelTabs: RightPanelTab[]
-  activeRightPanelTab: string
+  rightPanelModules: RightPanelModule[]
+  activeRightPanelModule: string
+  activeRightPanelDetail: string | null
   toolbarItems: ToolbarItem[]
 }
 
@@ -51,8 +52,9 @@ function createInitialState(): AgentStoreState {
     widgetVisible: true,
     hasMoreSessions: false,
     sessionPage: 0,
-    rightPanelTabs: [],
-    activeRightPanelTab: DEFAULT_TAB_KEY,
+    rightPanelModules: [],
+    activeRightPanelModule: DEFAULT_MODULE_KEY,
+    activeRightPanelDetail: null,
     toolbarItems: [],
   }
 }

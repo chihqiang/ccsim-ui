@@ -34,10 +34,7 @@
 
           <div class="ccsim-panel__chat">
             <!-- Chat header -->
-            <ChatHeader
-              v-if="store.currentSessionId"
-              @close-session="handleCloseSession"
-            />
+            <ChatHeader v-if="store.currentSessionId" @close-session="handleCloseSession" />
 
             <ChatMessages
               :messages="currentMessages"
