@@ -1,6 +1,6 @@
 {
   "name": "@chihqiang/ccsim-ui",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "基于 TypeScript 开发，支持访客/客服双角色即时通信，内置完整开箱即用聊天UI组件。",
   "license": "Apache-2.0",
   "type": "module",
