@@ -92,12 +92,20 @@
           <RightPanel v-if="store.currentSessionId" />
         </div>
       </template>
+
+      <!-- Resize handles (hidden in fullscreen) -->
+      <div v-if="!isFullscreen" class="ccsim-resize ccsim-resize--right"
+           @mousedown="startResize('right', $event)" />
+      <div v-if="!isFullscreen" class="ccsim-resize ccsim-resize--bottom"
+           @mousedown="startResize('bottom', $event)" />
+      <div v-if="!isFullscreen" class="ccsim-resize ccsim-resize--corner"
+           @mousedown="startResize('bottom-right', $event)" />
     </div>
   </Transition>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { store } from '@/store/agent'
 import { getInstance } from '@/agentSdk'
 import ChatMessages from '@/ui/chatMessages.vue'
@@ -114,6 +122,7 @@ import SessionList from './sessionList.vue'
 import RightPanel from './rightPanel.vue'
 import { useDrag } from '@/agent/useDrag'
 import { useFullscreen } from '@/agent/useFullscreen'
+import { useResize, loadPanelSize } from '@/agent/useResize'
 import { useAgentLogin } from '@/agent/useAgentLogin'
 import { t as $t } from '@/i18n'
 
@@ -122,6 +131,7 @@ const panelRef = ref<HTMLElement | null>(null)
 const previewUrl = ref<string | null>(null)
 const { startDrag } = useDrag(panelRef)
 const { isFullscreen, toggleFullscreen } = useFullscreen()
+const { startResize } = useResize(panelRef)
 const { isLoggingIn, loginError, onLogin: handleLogin } = useAgentLogin()
 
 function hidePanel() {
@@ -135,6 +145,24 @@ function onKeydown(e: KeyboardEvent) {
 
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onUnmounted(() => document.removeEventListener('keydown', onKeydown))
+
+watch(
+  () => store.panelVisible,
+  (visible) => {
+    if (visible) {
+      nextTick(() => {
+        if (panelRef.value && !isFullscreen.value) {
+          const saved = loadPanelSize()
+          if (saved) {
+            panelRef.value.style.width = `${saved.width}px`
+            panelRef.value.style.height = `${saved.height}px`
+          }
+        }
+      })
+    }
+  },
+  { immediate: true },
+)
 
 const currentMessages = computed(() => store.messagesMap[store.currentSessionId ?? -1] ?? [])
 const currentHistoryLoading = computed(
@@ -230,6 +258,33 @@ function loadMoreHistory() {
   width: 56px;
   height: 56px;
   color: var(--cl-gray-300);
+}
+
+/* Resize handles */
+.ccsim-resize {
+  position: absolute;
+  z-index: 10;
+}
+.ccsim-resize--right {
+  top: 0;
+  right: -4px;
+  width: 8px;
+  height: 100%;
+  cursor: col-resize;
+}
+.ccsim-resize--bottom {
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  cursor: row-resize;
+}
+.ccsim-resize--corner {
+  bottom: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
 }
 
 /* Panel transition */
