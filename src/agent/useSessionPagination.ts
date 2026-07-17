@@ -19,7 +19,7 @@ export function useSessionPagination() {
   function onLoadMore() {
     if (isLoadingMore.value) return
     isLoadingMore.value = true
-    const nextPage = store._sessionPage + 1
+    const nextPage = store.sessionPage + 1
     sdkRef.requestSessionList(nextPage, 50, 'active')
     // 超时保护：10 秒后如果还没收到响应，重置 loading
     timeoutTimer = setTimeout(() => {
@@ -28,9 +28,9 @@ export function useSessionPagination() {
     }, PAGINATION_TIMEOUT)
   }
 
-  // 监听 _sessionPage 变化来重置 isLoadingMore（服务端响应到达时）
+  // 监听 sessionPage 变化来重置 isLoadingMore（服务端响应到达时）
   watch(
-    () => store._sessionPage,
+    () => store.sessionPage,
     () => {
       if (timeoutTimer) {
         clearTimeout(timeoutTimer)

@@ -78,7 +78,7 @@
         :typing-visible="store.agentTyping"
         :empty-title="$t('panel.visitor.emptyTitle')"
         :empty-desc="$t('panel.visitor.emptyDesc')"
-        :has-more-history="store._hasMoreHistory"
+        :has-more-history="store.hasMoreHistory"
         :history-loading="store.historyLoading"
         @preview-image="previewUrl = $event"
         @load-more="loadMoreHistory"

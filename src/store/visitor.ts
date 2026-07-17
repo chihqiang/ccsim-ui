@@ -15,7 +15,7 @@ export interface VisitorStoreState {
   hasOnlineAgent: boolean
   sessionId: number | null
   messages: ChatMessageItem[]
-  _hasMoreHistory: boolean
+  hasMoreHistory: boolean
   /** 对方正在输入 */
   agentTyping: boolean
   /** 未读消息数 */
@@ -37,7 +37,7 @@ function createInitialState(): VisitorStoreState {
     messages: [],
     panelVisible: false,
     widgetVisible: true,
-    _hasMoreHistory: false,
+    hasMoreHistory: false,
     agentTyping: false,
     unreadCount: 0,
     historyLoading: false,

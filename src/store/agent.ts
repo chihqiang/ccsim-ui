@@ -23,9 +23,9 @@ export interface AgentStoreState {
   unreadCount: number
   visitorTyping: boolean
   historyLoading: Record<number, boolean>
-  _hasMoreHistory: Record<number, boolean>
-  _hasMoreSessions: boolean
-  _sessionPage: number
+  hasMoreHistory: Record<number, boolean>
+  hasMoreSessions: boolean
+  sessionPage: number
   rightPanelTabs: RightPanelTab[]
   activeRightPanelTab: string
   toolbarItems: ToolbarItem[]
@@ -46,11 +46,11 @@ function createInitialState(): AgentStoreState {
     unreadCount: 0,
     visitorTyping: false,
     historyLoading: {},
-    _hasMoreHistory: {},
+    hasMoreHistory: {},
     panelVisible: false,
     widgetVisible: true,
-    _hasMoreSessions: false,
-    _sessionPage: 0,
+    hasMoreSessions: false,
+    sessionPage: 0,
     rightPanelTabs: [],
     activeRightPanelTab: DEFAULT_TAB_KEY,
     toolbarItems: [],

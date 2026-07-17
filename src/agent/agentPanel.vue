@@ -15,73 +15,12 @@
       />
 
       <!-- Offline state -->
-      <div v-if="!store.isAgentOnline" class="ccsim-panel__offline">
-        <div class="ccsim-panel__offline-card">
-          <svg class="ccsim-panel__offline-icon" viewBox="0 0 80 80" fill="none">
-            <rect
-              x="8"
-              y="12"
-              width="64"
-              height="48"
-              rx="8"
-              stroke="currentColor"
-              stroke-width="2"
-            />
-            <path
-              d="M24 36h32M24 44h20"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-            <path
-              d="M40 60v8l-8-6h-8"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <circle cx="56" cy="28" r="4" fill="currentColor" opacity="0.3" />
-          </svg>
-          <h3>{{ $t('panel.agent.offlineTitle') }}</h3>
-          <p>{{ $t('panel.agent.offlineDesc') }}</p>
-          <button class="ccsim-panel__online-btn" :disabled="isLoggingIn" @click="handleLogin">
-            <svg
-              v-if="isLoggingIn"
-              class="ccsim-panel__btn-spinner"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.3" />
-              <path
-                d="M12 2a10 10 0 0 1 10 10"
-                stroke="currentColor"
-                stroke-width="3"
-                stroke-linecap="round"
-              />
-            </svg>
-            <span>{{
-              isLoggingIn ? $t('panel.agent.loggingIn') : $t('panel.agent.onlineBtn')
-            }}</span>
-          </button>
-          <p v-if="loginError" class="ccsim-panel__error">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            {{ loginError }}
-          </p>
-        </div>
-      </div>
+      <OfflineState
+        v-if="!store.isAgentOnline"
+        :is-logging-in="isLoggingIn"
+        :login-error="loginError"
+        @login="handleLogin"
+      />
 
       <!-- Online state -->
       <template v-else>
@@ -95,41 +34,10 @@
 
           <div class="ccsim-panel__chat">
             <!-- Chat header -->
-            <div v-if="store.currentSessionId" class="ccsim-panel__chat-header">
-              <div class="ccsim-panel__chat-visitor-info">
-                <van-image
-                  v-if="currentVisitorAvatar"
-                  round
-                  width="28"
-                  height="28"
-                  :src="currentVisitorAvatar"
-                />
-                <div v-else class="ccsim-panel__chat-avatar-fallback">
-                  {{ currentVisitorName.charAt(0) }}
-                </div>
-                <div>
-                  <div class="ccsim-panel__chat-visitor-name">{{ currentVisitorName }}</div>
-                  <div v-if="currentVisitorSource" class="ccsim-panel__chat-visitor-source">
-                    {{ currentVisitorSource }}
-                  </div>
-                </div>
-              </div>
-              <button class="ccsim-panel__close-session" @click="handleCloseSession">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="15" y1="9" x2="9" y2="15" />
-                  <line x1="9" y1="9" x2="15" y2="15" />
-                </svg>
-                {{ $t('visitorInfo.closeSession') }}
-              </button>
-            </div>
+            <ChatHeader
+              v-if="store.currentSessionId"
+              @close-session="handleCloseSession"
+            />
 
             <ChatMessages
               :messages="currentMessages"
@@ -137,7 +45,7 @@
               :typing-visible="store.visitorTyping"
               :empty-title="$t('panel.agent.emptyTitle')"
               :empty-desc="$t('panel.agent.emptyDesc')"
-              :has-more-history="store._hasMoreHistory[store.currentSessionId ?? -1] ?? false"
+              :has-more-history="store.hasMoreHistory[store.currentSessionId ?? -1] ?? false"
               :history-loading="currentHistoryLoading"
               @preview-image="previewUrl = $event"
               @load-more="loadMoreHistory"
@@ -193,7 +101,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Image as VanImage } from 'vant'
 import { store } from '@/store/agent'
 import { getInstance } from '@/agentSdk'
 import ChatMessages from '@/ui/chatMessages.vue'
@@ -204,6 +111,8 @@ import Toolbar from '@/ui/toolbar.vue'
 import type { ToolbarContext } from '@/types/toolbar'
 import { Role } from '@/types/sdk'
 import AgentHeader from './agentHeader.vue'
+import ChatHeader from './chatHeader.vue'
+import OfflineState from './offlineState.vue'
 import SessionList from './sessionList.vue'
 import RightPanel from './rightPanel.vue'
 import { useDrag } from '@/agent/useDrag'
@@ -241,41 +150,6 @@ const toolbarContext = computed<ToolbarContext>(() => ({
   agentName: store.agentName,
   role: Role.AGENT,
 }))
-
-const currentVisitorName = computed(() => {
-  const id = store.currentSessionId
-  if (id == null) return ''
-  const session = store.sessions.find((s: any) => s.sessionId === id) as
-    Record<string, any> | undefined
-  if (session) return session.visitorNickname || $t('format.unknownUser')
-  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as
-    Record<string, any> | undefined
-  return waiting?.visitor_nickname || $t('format.unknownUser')
-})
-
-const currentVisitorAvatar = computed(() => {
-  const id = store.currentSessionId
-  if (id == null) return null
-  const session = store.sessions.find((s: any) => s.sessionId === id) as
-    Record<string, any> | undefined
-  if (session?.visitorAvatar) return session.visitorAvatar
-  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as
-    Record<string, any> | undefined
-  if (waiting?.visitorAvatar) return waiting.visitorAvatar
-  if (waiting?.visitor_avatar) return waiting.visitor_avatar
-  return null
-})
-
-const currentVisitorSource = computed(() => {
-  const id = store.currentSessionId
-  if (id == null) return ''
-  const session = store.sessions.find((s: any) => s.sessionId === id) as
-    Record<string, any> | undefined
-  if (session?.source) return session.source
-  const waiting = store.waitingSessions.find((s: any) => s.session_id === id) as
-    Record<string, any> | undefined
-  return waiting?.source || ''
-})
 
 function handleCloseSession() {
   const id = store.currentSessionId
@@ -341,67 +215,6 @@ function loadMoreHistory() {
   min-width: 0;
   position: relative;
 }
-.ccsim-panel__chat-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--sp-2_5) var(--sp-4);
-  border-bottom: 1px solid var(--cl-border-light);
-  background: var(--cl-bg-container);
-  flex-shrink: 0;
-}
-.ccsim-panel__chat-visitor-info {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-}
-.ccsim-panel__chat-avatar-fallback {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
-  background: var(--cl-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: #fff;
-  flex-shrink: 0;
-}
-.ccsim-panel__chat-visitor-name {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--cl-text-primary);
-  line-height: 1.3;
-}
-.ccsim-panel__chat-visitor-source {
-  font-size: var(--font-size-xs);
-  color: var(--cl-text-tertiary);
-  line-height: 1.3;
-}
-.ccsim-panel__close-session {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-1);
-  padding: 4px 10px;
-  border: 1px solid var(--cl-border);
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--cl-text-tertiary);
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-.ccsim-panel__close-session svg {
-  width: 14px;
-  height: 14px;
-  color: var(--cl-danger);
-}
-.ccsim-panel__close-session:hover {
-  background: var(--cl-danger-bg);
-  border-color: var(--cl-danger);
-  color: var(--cl-danger);
-}
 
 /* No session */
 .ccsim-panel__no-session {
@@ -420,82 +233,6 @@ function loadMoreHistory() {
   width: 56px;
   height: 56px;
   color: var(--cl-gray-300);
-}
-
-/* Offline state */
-.ccsim-panel__offline {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--sp-10);
-  background: var(--cl-bg-page);
-}
-.ccsim-panel__offline-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-10) var(--sp-8);
-  background: var(--cl-bg-container);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  text-align: center;
-  max-width: 320px;
-}
-.ccsim-panel__offline-icon {
-  width: 56px;
-  height: 56px;
-  color: var(--cl-primary);
-}
-.ccsim-panel__offline-card h3 {
-  margin: 0;
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--cl-text-primary);
-}
-.ccsim-panel__offline-card p {
-  margin: 0;
-  font-size: var(--font-size-base);
-  color: var(--cl-text-tertiary);
-}
-.ccsim-panel__online-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: 10px 32px;
-  border: none;
-  border-radius: var(--radius-round);
-  background: var(--cl-primary);
-  color: #fff;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-btn);
-  margin-top: var(--sp-2);
-}
-.ccsim-panel__online-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-btn-hover);
-}
-.ccsim-panel__online-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-.ccsim-panel__btn-spinner {
-  width: 16px;
-  height: 16px;
-  animation: ccsim-spin 0.8s linear infinite;
-}
-.ccsim-panel__error {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-1);
-  color: var(--cl-danger);
-  font-size: var(--font-size-sm);
-  margin-top: var(--sp-1);
 }
 
 /* Panel transition */
