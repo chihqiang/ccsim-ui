@@ -72,7 +72,9 @@ function send() {
   emit('send', trimmed)
   text.value = ''
   sending.value = true
-  setTimeout(() => { sending.value = false }, 300)
+  setTimeout(() => {
+    sending.value = false
+  }, 300)
 }
 </script>
 

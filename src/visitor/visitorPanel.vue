@@ -119,7 +119,11 @@
       <Toolbar v-if="store.sessionId" :items="store.toolbarItems" :context="toolbarContext" />
 
       <!-- Input -->
-      <MessageInput v-if="!store.hadSession || store.sessionId" :placeholder="$t('panel.visitor.placeholder')" @send="handleSend" />
+      <MessageInput
+        v-if="!store.hadSession || store.sessionId"
+        :placeholder="$t('panel.visitor.placeholder')"
+        @send="handleSend"
+      />
     </div>
   </Transition>
 </template>

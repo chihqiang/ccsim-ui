@@ -134,7 +134,9 @@ watch(
 }
 .ccsim-right-panel__view-enter-active,
 .ccsim-right-panel__view-leave-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 .ccsim-right-panel__view-enter-from {
   opacity: 0;

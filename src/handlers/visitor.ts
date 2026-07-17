@@ -9,6 +9,7 @@ import { VisitorAgentStatusHandler } from './visitorAgentStatus'
 import { VisitorOfflinePushHandler } from './visitorOfflinePush'
 import { VisitorHistoryBatchHandler } from './visitorHistoryBatch'
 import { VisitorUpdateOkHandler } from './visitorUpdateOk'
+import { VisitorNewSessionHandler } from './visitorNewSession'
 import { SatisfactionRateHandler } from '@/toolbar/satisfaction/satisfactionRate'
 import { HeartbeatAckHandler } from './heartbeatAck'
 import { ErrorHandler } from './error'
@@ -26,6 +27,7 @@ const handlers: MessageHandler[] = [
   new VisitorAgentStatusHandler(),
   new VisitorOfflinePushHandler(),
   new VisitorHistoryBatchHandler(),
+  new VisitorNewSessionHandler(),
   new ErrorHandler(),
   new SatisfactionRateHandler(),
   new TypingPushHandler(),

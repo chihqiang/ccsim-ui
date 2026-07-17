@@ -8,10 +8,15 @@
 
     <!-- Skeleton loading (initial switch) -->
     <div v-if="historyLoading && !messages.length" class="ccsim-msgs__skeleton">
-      <div v-for="i in 4" :key="i" class="ccsim-msgs__skeleton-row" :class="{ 'ccsim-msgs__skeleton-row--right': i % 3 === 0 }">
+      <div
+        v-for="i in 4"
+        :key="i"
+        class="ccsim-msgs__skeleton-row"
+        :class="{ 'ccsim-msgs__skeleton-row--right': i % 3 === 0 }"
+      >
         <div class="ccsim-msgs__skeleton-avatar" />
         <div class="ccsim-msgs__skeleton-bubble">
-          <div class="ccsim-msgs__skeleton-line" :style="{ width: (40 + (i * 17) % 50) + '%' }" />
+          <div class="ccsim-msgs__skeleton-line" :style="{ width: 40 + ((i * 17) % 50) + '%' }" />
           <div v-if="i % 2 === 0" class="ccsim-msgs__skeleton-line" style="width: 60%" />
         </div>
       </div>
@@ -85,7 +90,14 @@
   <!-- Scroll to bottom FAB -->
   <Transition name="ccsim-fab">
     <button v-if="!isNearBottom && messages.length" class="ccsim-msgs__fab" @click="scrollToBottom">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <polyline points="6 9 12 15 18 9" />
       </svg>
     </button>
