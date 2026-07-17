@@ -1,6 +1,6 @@
 import { ref, onUnmounted } from 'vue'
 
-export type ResizeDirection = 'right' | 'bottom' | 'bottom-right'
+export type ResizeDirection = 'right' | 'bottom' | 'bottom-right' | 'bottom-left'
 
 const STORAGE_KEY = 'ccsim_agent_panel_size'
 const MIN_WIDTH = 400
@@ -61,7 +61,15 @@ export function useResize(panelRef: { value: HTMLElement | null }) {
         const w = Math.min(Math.max(startW + dx, MIN_WIDTH), maxW)
         panel.style.width = `${w}px`
       }
-      if (direction === 'bottom' || direction === 'bottom-right') {
+      if (direction === 'bottom-left') {
+        const w = Math.min(Math.max(startW - dx, MIN_WIDTH), startLeft + startW)
+        const newW = startW - dx
+        if (newW >= MIN_WIDTH && newW <= startLeft + startW) {
+          panel.style.width = `${newW}px`
+          panel.style.left = `${startLeft + dx}px`
+        }
+      }
+      if (direction === 'bottom' || direction === 'bottom-right' || direction === 'bottom-left') {
         const h = Math.min(Math.max(startH + dy, MIN_HEIGHT), maxH)
         panel.style.height = `${h}px`
       }

@@ -100,6 +100,8 @@
            @mousedown="startResize('bottom', $event)" />
       <div v-if="!isFullscreen" class="ccsim-resize ccsim-resize--corner"
            @mousedown="startResize('bottom-right', $event)" />
+      <div v-if="!isFullscreen" class="ccsim-resize ccsim-resize--corner-left"
+           @mousedown="startResize('bottom-left', $event)" />
     </div>
   </Transition>
 </template>
@@ -264,27 +266,73 @@ function loadMoreHistory() {
 .ccsim-resize {
   position: absolute;
   z-index: 10;
+  transition: background 0.15s;
 }
 .ccsim-resize--right {
   top: 0;
-  right: -4px;
-  width: 8px;
+  right: -3px;
+  width: 6px;
   height: 100%;
   cursor: col-resize;
 }
+.ccsim-resize--right:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
 .ccsim-resize--bottom {
-  bottom: -4px;
+  bottom: -3px;
   left: 0;
   width: 100%;
-  height: 8px;
+  height: 6px;
   cursor: row-resize;
 }
+.ccsim-resize--bottom:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
 .ccsim-resize--corner {
-  bottom: -4px;
-  right: -4px;
-  width: 16px;
-  height: 16px;
+  bottom: -1px;
+  right: -1px;
+  width: 18px;
+  height: 18px;
   cursor: nwse-resize;
+}
+.ccsim-resize--corner::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 2px 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.ccsim-resize--corner:hover::after {
+  opacity: 1;
+}
+.ccsim-resize--corner-left {
+  bottom: -1px;
+  left: -1px;
+  width: 18px;
+  height: 18px;
+  cursor: nesw-resize;
+}
+.ccsim-resize--corner-left::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 0 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.ccsim-resize--corner-left:hover::after {
+  opacity: 1;
 }
 
 /* Panel transition */
