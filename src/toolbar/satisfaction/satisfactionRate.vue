@@ -78,12 +78,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onUnmounted } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { store } from '@/store/visitor'
 import { getInstance } from '@/visitorSdk'
 import { satisfactionState, hideRate } from './state'
-
-const { t } = useI18n()
+import { t } from '@/i18n'
 const sdk = getInstance()
 const rated = ref(false)
 let hideTimer: ReturnType<typeof setTimeout> | null = null

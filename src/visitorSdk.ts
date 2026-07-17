@@ -12,6 +12,7 @@ import { BaseSDK } from '@/baseSdk'
 import { setLocale, t } from '@/i18n'
 import type { ToolbarItem } from '@/types/toolbar'
 import type { PanelSection } from '@/types/panelSection'
+import { markRaw } from 'vue'
 import { satisfactionState, showRate, hideRate } from '@/toolbar/satisfaction/state'
 import { CcsimError } from '@/utils/errors'
 import type { MsgType } from '@/types/store'
@@ -267,7 +268,7 @@ export class VisitorSDK extends BaseSDK {
       logger.warn(`PanelSection "${section.key}" already registered, skipping`)
       return
     }
-    store.panelSections.push(section)
+    store.panelSections.push({ ...section, component: markRaw(section.component) })
     store.panelSections.sort((a, b) => (a.order ?? 100) - (b.order ?? 100))
     logger.debug(`PanelSection "${section.key}" registered`)
   }
