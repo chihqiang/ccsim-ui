@@ -30,8 +30,10 @@
         />
 
         <div class="ccsim-panel__body">
-          <SessionList />
-
+          <div class="ccsim-panel__session" :style="{ width: sessionW + 'px' }">
+            <SessionList />
+          </div>
+          <div class="ccsim-splitter ccsim-splitter--v" @mousedown="startSessionSplit" />
           <div class="ccsim-panel__chat">
             <!-- Chat header -->
             <ChatHeader v-if="store.currentSessionId" @close-session="handleCloseSession" />
@@ -88,20 +90,36 @@
               @send="handleSend"
             />
           </div>
-
-          <RightPanel v-if="store.currentSessionId" />
+          <template v-if="store.currentSessionId">
+            <div class="ccsim-splitter ccsim-splitter--v" @mousedown="startRightSplit" />
+            <div class="ccsim-panel__right" :style="{ width: rightW + 'px' }">
+              <RightPanel />
+            </div>
+          </template>
         </div>
       </template>
 
       <!-- Resize handles (hidden in fullscreen) -->
-      <div v-if="!isFullscreen" class="ccsim-resize ccsim-resize--right"
-           @mousedown="startResize('right', $event)" />
-      <div v-if="!isFullscreen" class="ccsim-resize ccsim-resize--bottom"
-           @mousedown="startResize('bottom', $event)" />
-      <div v-if="!isFullscreen" class="ccsim-resize ccsim-resize--corner"
-           @mousedown="startResize('bottom-right', $event)" />
-      <div v-if="!isFullscreen" class="ccsim-resize ccsim-resize--corner-left"
-           @mousedown="startResize('bottom-left', $event)" />
+      <div
+        v-if="!isFullscreen"
+        class="ccsim-resize ccsim-resize--right"
+        @mousedown="startResize('right', $event)"
+      />
+      <div
+        v-if="!isFullscreen"
+        class="ccsim-resize ccsim-resize--bottom"
+        @mousedown="startResize('bottom', $event)"
+      />
+      <div
+        v-if="!isFullscreen"
+        class="ccsim-resize ccsim-resize--corner"
+        @mousedown="startResize('bottom-right', $event)"
+      />
+      <div
+        v-if="!isFullscreen"
+        class="ccsim-resize ccsim-resize--corner-left"
+        @mousedown="startResize('bottom-left', $event)"
+      />
     </div>
   </Transition>
 </template>
@@ -125,6 +143,7 @@ import RightPanel from './rightPanel.vue'
 import { useDrag } from '@/agent/useDrag'
 import { useFullscreen } from '@/agent/useFullscreen'
 import { useResize, loadPanelSize } from '@/agent/useResize'
+import { useSplitter } from '@/agent/useSplitter'
 import { useAgentLogin } from '@/agent/useAgentLogin'
 import { t as $t } from '@/i18n'
 
@@ -134,6 +153,8 @@ const previewUrl = ref<string | null>(null)
 const { startDrag } = useDrag(panelRef)
 const { isFullscreen, toggleFullscreen } = useFullscreen()
 const { startResize } = useResize(panelRef)
+const hasRightPanel = computed(() => !!store.currentSessionId)
+const { sessionW, rightW, startSessionSplit, startRightSplit } = useSplitter(hasRightPanel)
 const { isLoggingIn, loginError, onLogin: handleLogin } = useAgentLogin()
 
 function hidePanel() {
@@ -232,6 +253,40 @@ function loadMoreHistory() {
   flex: 1;
   display: flex;
   overflow: hidden;
+}
+.ccsim-panel__session {
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.ccsim-panel__session :deep(.ccsim-sessions) {
+  width: 100%;
+}
+.ccsim-panel__right {
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.ccsim-panel__right :deep(.ccsim-right-panel) {
+  width: 100%;
+}
+
+/* Splitter handles */
+.ccsim-splitter {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 5;
+  transition: background 0.15s;
+}
+.ccsim-splitter--v {
+  width: 4px;
+  cursor: col-resize;
+  background: var(--cl-border);
+}
+.ccsim-splitter--v:hover {
+  background: rgba(99, 102, 241, 0.5);
 }
 
 /* Chat area */
