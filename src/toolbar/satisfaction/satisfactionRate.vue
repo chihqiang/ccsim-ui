@@ -92,11 +92,7 @@ onUnmounted(() => {
   }
 })
 
-const options = [
-  { value: 1 },
-  { value: 2 },
-  { value: 3 },
-]
+const options = [{ value: 1 }, { value: 2 }, { value: 3 }]
 
 function rate(val: number) {
   const sid = satisfactionState.rateCardSessionId ?? store.sessionId
