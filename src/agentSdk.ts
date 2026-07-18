@@ -14,7 +14,7 @@ import type { RightPanelModule } from '@/types/rightPanel'
 import { DEFAULT_MODULE_KEY, DEFAULT_MODULE_ORDER } from '@/types/rightPanel'
 import type { ToolbarItem } from '@/types/toolbar'
 import type { MsgType } from '@/types/store'
-import VisitorInfoTab from '@/tabs/VisitorInfo/visitorInfoTab.vue'
+import VisitorInfoTab from '@/modules/VisitorInfo/visitorInfoTab.vue'
 
 type EventCallback<K extends SdkEventName> = SdkEvents[K]
 
