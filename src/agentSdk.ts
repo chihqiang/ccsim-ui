@@ -10,11 +10,9 @@ import { sendChat, createSendState, type SendChatContext } from '@/messaging/age
 import { MessagePipeline } from '@/messaging/agentPipeline'
 import { BaseSDK } from '@/baseSdk'
 import { setLocale, t } from '@/i18n'
-import type { RightPanelModule } from '@/types/rightPanel'
-import { DEFAULT_MODULE_KEY, DEFAULT_MODULE_ORDER } from '@/types/rightPanel'
-import type { ToolbarItem } from '@/types/toolbar'
+import { DEFAULT_MODULE_KEY, DEFAULT_MODULE_ORDER } from '@/types/sidebar'
 import type { MsgType } from '@/types/store'
-import VisitorInfoTab from '@/modules/VisitorInfo/visitorInfoTab.vue'
+import VisitorInfoTab from '@/sidebar/VisitorInfo/visitorInfoTab.vue'
 
 type EventCallback<K extends SdkEventName> = SdkEvents[K]
 
@@ -52,7 +50,7 @@ export class AgentSDK extends BaseSDK {
   }
 
   private _registerDefaults() {
-    this.registerRightPanelModule({
+    this.registerRightPanelSidebar({
       key: DEFAULT_MODULE_KEY,
       label: '游客信息',
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
@@ -276,46 +274,6 @@ export class AgentSDK extends BaseSDK {
     this.ensureMounted()
     store.panelVisible = false
     store.widgetVisible = true
-  }
-
-  registerRightPanelModule(module: RightPanelModule) {
-    const exists = store.rightPanelModules.some((m) => m.key === module.key)
-    if (exists) {
-      logger.warn(`RightPanelModule "${module.key}" already registered, skipping`)
-      return
-    }
-    const entry: RightPanelModule = { ...module, order: module.order ?? DEFAULT_MODULE_ORDER }
-    store.rightPanelModules.push(entry)
-    store.rightPanelModules.sort((a, b) => a.order! - b.order!)
-    logger.debug(`RightPanelModule "${module.key}" registered`)
-  }
-
-  unregisterRightPanelModule(key: string) {
-    const idx = store.rightPanelModules.findIndex((m) => m.key === key)
-    if (idx === -1) return
-    store.rightPanelModules.splice(idx, 1)
-    if (store.activeRightPanelDetail === key) {
-      store.activeRightPanelDetail = null
-    }
-    logger.debug(`RightPanelModule "${key}" unregistered`)
-  }
-
-  registerToolbar(item: ToolbarItem) {
-    const exists = store.toolbarItems.some((p) => p.key === item.key)
-    if (exists) {
-      logger.warn(`Toolbar "${item.key}" already registered, skipping`)
-      return
-    }
-    store.toolbarItems.push(item)
-    store.toolbarItems.sort((a, b) => (a.order ?? 100) - (b.order ?? 100))
-    logger.debug(`Toolbar "${item.key}" registered`)
-  }
-
-  unregisterToolbar(key: string) {
-    const idx = store.toolbarItems.findIndex((p) => p.key === key)
-    if (idx === -1) return
-    store.toolbarItems.splice(idx, 1)
-    logger.debug(`Toolbar "${key}" unregistered`)
   }
 
   async destroy(): Promise<void> {

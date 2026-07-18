@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { store } from '@/store/agent'
-import { DEFAULT_MODULE_ORDER } from '@/types/rightPanel'
+import { DEFAULT_MODULE_ORDER } from '@/types/sidebar'
 
 const sortedModules = computed(() => {
   return [...store.rightPanelModules].sort(

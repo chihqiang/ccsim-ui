@@ -228,14 +228,7 @@ export class VisitorSDK extends BaseSDK {
   }
 
   registerToolbar(item: ToolbarItem) {
-    const exists = store.toolbarItems.some((p) => p.key === item.key)
-    if (exists) {
-      logger.warn(`Toolbar "${item.key}" already registered, skipping`)
-      return
-    }
-    store.toolbarItems.push(item)
-    store.toolbarItems.sort((a, b) => (a.order ?? 100) - (b.order ?? 100))
-    logger.debug(`Toolbar "${item.key}" registered`)
+    super.registerToolbar(item)
 
     // 自动注册关联的 panel section
     if (item.panel) {
@@ -255,11 +248,8 @@ export class VisitorSDK extends BaseSDK {
   }
 
   unregisterToolbar(key: string) {
-    const idx = store.toolbarItems.findIndex((p) => p.key === key)
-    if (idx === -1) return
-    store.toolbarItems.splice(idx, 1)
+    super.unregisterToolbar(key)
     this.unregisterPanelSection(key)
-    logger.debug(`Toolbar "${key}" unregistered`)
   }
 
   registerPanelSection(section: PanelSection) {
