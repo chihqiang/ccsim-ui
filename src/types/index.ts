@@ -13,8 +13,8 @@ export {
   PAGINATION_TIMEOUT,
 } from './sdk'
 export type { VisitorInitOptions, AgentInitOptions } from './options'
-export type { RightPanelModule } from './rightPanel'
-export { DEFAULT_MODULE_KEY, DEFAULT_MODULE_ORDER } from './rightPanel'
+export type { RightPanelSidebar } from './sidebar'
+export { DEFAULT_MODULE_KEY, DEFAULT_MODULE_ORDER } from './sidebar'
 
 export { ClientMessageTypeEnum } from './clientMessage'
 export type {

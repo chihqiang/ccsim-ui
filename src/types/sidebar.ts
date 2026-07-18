@@ -1,6 +1,6 @@
 import type { Component } from 'vue'
 
-export interface RightPanelModule {
+export interface RightPanelSidebar {
   key: string
   label: string
   icon: string

@@ -11,6 +11,9 @@ import { logVersion } from '@/utils/version'
 import { clearAllTimers } from '@/messaging/coreSend'
 import { t } from '@/i18n'
 import { AUTH_TIMEOUT } from '@/types/sdk'
+import type { RightPanelSidebar } from '@/types/sidebar'
+import { DEFAULT_MODULE_ORDER } from '@/types/sidebar'
+import type { ToolbarItem } from '@/types/toolbar'
 
 interface HandlerEntry {
   readonly type: string
@@ -22,6 +25,10 @@ export interface SdkStore {
   connId: string | null
   panelVisible: boolean
   widgetVisible: boolean
+  rightPanelModules?: RightPanelSidebar[]
+  activeRightPanelSidebar?: string
+  activeRightPanelDetail?: string | null
+  toolbarItems?: ToolbarItem[]
   [key: string]: unknown
 }
 
@@ -214,5 +221,53 @@ export abstract class BaseSDK {
     if (!document.getElementById('ccsim-sdk-root')) {
       this.mountUI()
     }
+  }
+
+  registerRightPanelSidebar(module: RightPanelSidebar) {
+    if (!this.store.rightPanelModules) {
+      this.store.rightPanelModules = []
+    }
+    const exists = this.store.rightPanelModules.some((m) => m.key === module.key)
+    if (exists) {
+      logger.warn(`RightPanelSidebar "${module.key}" already registered, skipping`)
+      return
+    }
+    const entry: RightPanelSidebar = { ...module, order: module.order ?? DEFAULT_MODULE_ORDER }
+    this.store.rightPanelModules.push(entry)
+    this.store.rightPanelModules.sort((a, b) => a.order! - b.order!)
+    logger.debug(`RightPanelSidebar "${module.key}" registered`)
+  }
+
+  unregisterRightPanelSidebar(key: string) {
+    if (!this.store.rightPanelModules) return
+    const idx = this.store.rightPanelModules.findIndex((m) => m.key === key)
+    if (idx === -1) return
+    this.store.rightPanelModules.splice(idx, 1)
+    if (this.store.activeRightPanelDetail === key) {
+      this.store.activeRightPanelDetail = null
+    }
+    logger.debug(`RightPanelSidebar "${key}" unregistered`)
+  }
+
+  registerToolbar(item: ToolbarItem) {
+    if (!this.store.toolbarItems) {
+      this.store.toolbarItems = []
+    }
+    const exists = this.store.toolbarItems.some((p) => p.key === item.key)
+    if (exists) {
+      logger.warn(`Toolbar "${item.key}" already registered, skipping`)
+      return
+    }
+    this.store.toolbarItems.push(item)
+    this.store.toolbarItems.sort((a, b) => (a.order ?? 100) - (b.order ?? 100))
+    logger.debug(`Toolbar "${item.key}" registered`)
+  }
+
+  unregisterToolbar(key: string) {
+    if (!this.store.toolbarItems) return
+    const idx = this.store.toolbarItems.findIndex((p) => p.key === key)
+    if (idx === -1) return
+    this.store.toolbarItems.splice(idx, 1)
+    logger.debug(`Toolbar "${key}" unregistered`)
   }
 }
